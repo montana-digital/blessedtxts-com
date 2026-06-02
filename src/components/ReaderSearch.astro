@@ -1,0 +1,32 @@
+---
+interface Props {
+  translationLabel: string;
+}
+const { translationLabel } = Astro.props;
+---
+
+<div class="search-box reader-search" id="reader-search">
+  <label for="reader-search-input">
+    Search in <span class="reader-search-version">{translationLabel}</span>
+  </label>
+  <div class="reader-search-row">
+    <div class="reader-search-input-wrap">
+      <input
+        type="search"
+        id="reader-search-input"
+        placeholder="Keyword or reference (e.g. Jn 3:16)..."
+        autocomplete="off"
+        aria-autocomplete="list"
+        aria-controls="reader-search-suggest"
+      />
+      <ul id="reader-search-suggest" class="reader-search-suggest" role="listbox" hidden></ul>
+    </div>
+    <div class="reader-search-nav" aria-label="Search result navigation">
+      <button type="button" id="reader-search-prev" class="btn btn--small" title="Previous match" aria-label="Previous search match">←</button>
+      <span id="reader-search-counter" class="reader-search-counter" hidden></span>
+      <button type="button" id="reader-search-next" class="btn btn--small" title="Next match" aria-label="Next search match">→</button>
+    </div>
+  </div>
+  <p class="reader-search-hint">Try a keyword, topic in the sidebar, or a reference like <kbd>Jn 3:16</kbd> or <kbd>Ps 23:1</kbd>.</p>
+  <ul class="search-results reader-search-results" id="reader-search-results" hidden></ul>
+</div>

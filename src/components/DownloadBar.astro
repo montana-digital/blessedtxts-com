@@ -1,0 +1,60 @@
+---
+interface Props {
+  versionId: string;
+  label: string;
+  scopeLabel: string;
+  bookSlug?: string;
+  chapter?: number;
+  chapterJson?: string;
+}
+
+const { versionId, label, scopeLabel, bookSlug, chapter, chapterJson } = Astro.props;
+const enablePdf = import.meta.env.PUBLIC_ENABLE_PDF === '1';
+
+let txtHref = `/downloads/${versionId}/full.txt`;
+let mdHref = `/downloads/${versionId}/full.md`;
+let pdfHref = `/downloads/${versionId}/full.pdf`;
+
+if (bookSlug && chapter) {
+  txtHref = '#';
+  mdHref = '#';
+  pdfHref = `/downloads/${versionId}/${bookSlug}/${chapter}.pdf`;
+} else if (bookSlug) {
+  txtHref = `/downloads/${versionId}/${bookSlug}.txt`;
+  mdHref = `/downloads/${versionId}/${bookSlug}.md`;
+  pdfHref = `/downloads/${versionId}/${bookSlug}.pdf`;
+}
+
+const isChapter = bookSlug && chapter;
+---
+
+<aside class="download-bar" aria-label="Download scripture">
+  <span>{scopeLabel}</span>
+  {isChapter ? (
+    <>
+      <button type="button" data-dl="txt" data-chapter={chapterJson}>Download TXT</button>
+      <button type="button" data-dl="md" data-chapter={chapterJson}>Download Markdown</button>
+      {enablePdf && <a href={pdfHref} download>Download PDF</a>}
+    </>
+  ) : (
+    <>
+      <a href={txtHref} download>Download TXT</a>
+      <a href={mdHref} download>Download Markdown</a>
+      {enablePdf && <a href={pdfHref} download>Download PDF</a>}
+    </>
+  )}
+</aside>
+
+{isChapter && (
+  <script>
+    import { buildChapterTxt, buildChapterMd, triggerDownload } from '../lib/chapter-download';
+    document.querySelectorAll('.download-bar [data-dl="txt"], .download-bar [data-dl="md"]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const ch = JSON.parse(btn.getAttribute('data-chapter') || '{}');
+        const fmt = btn.getAttribute('data-dl');
+        const content = fmt === 'txt' ? buildChapterTxt(ch) : buildChapterMd(ch);
+        triggerDownload(`${ch.bookSlug}-${ch.chapter}.${fmt === 'txt' ? 'txt' : 'md'}`, content);
+      });
+    });
+  </script>
+)}

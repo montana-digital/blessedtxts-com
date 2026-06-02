@@ -1,0 +1,46 @@
+{
+  "name": "blessedtxts-com",
+  "version": "2.0.0",
+  "description": "Free Bible verse generator and online Bible reader",
+  "type": "module",
+  "scripts": {
+    "data": "node scripts/parse-bibles.mjs && node scripts/build-search-index.mjs",
+    "downloads": "node scripts/generate-downloads.mjs",
+    "downloads:fast": "cross-env SKIP_PDF=1 node scripts/generate-downloads.mjs",
+    "downloads:sample": "node scripts/generate-downloads-sample.mjs",
+    "downloads:kjv": "cross-env ONLY_VERSION=kjv node scripts/generate-downloads.mjs",
+    "downloads:web": "cross-env ONLY_VERSION=web node scripts/generate-downloads.mjs",
+    "downloads:webster": "cross-env ONLY_VERSION=webster node scripts/generate-downloads.mjs",
+    "assets": "node scripts/generate-assets.mjs",
+    "prebuild": "node scripts/parse-bibles.mjs && node scripts/build-search-index.mjs && node scripts/copy-chapter-json.mjs && node scripts/generate-assets.mjs && node scripts/ensure-indexnow-key.mjs",
+    "build": "cross-env SKIP_PDF=1 node scripts/generate-downloads.mjs && astro build",
+    "build:fast": "cross-env SKIP_PDF=1 PUBLIC_ENABLE_PDF=0 npm run prebuild && cross-env SKIP_PDF=1 PUBLIC_ENABLE_PDF=0 node scripts/generate-downloads.mjs && cross-env PUBLIC_ENABLE_PDF=0 astro build && node scripts/indexnow-submit.mjs",
+    "build:full": "node scripts/generate-downloads.mjs && cross-env PUBLIC_ENABLE_PDF=1 astro build && node scripts/indexnow-submit.mjs",
+    "dev": "astro dev",
+    "dev:full": "npm run prebuild && astro dev",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "keywords": [
+    "bible",
+    "KJV",
+    "astro",
+    "static"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@astrojs/sitemap": "^3.3.0",
+    "astro": "^5.7.10",
+    "minisearch": "^7.1.2",
+    "pdfkit": "^0.17.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@fontsource/cinzel": "^5.2.5",
+    "@fontsource/cinzel-decorative": "^5.2.5",
+    "@fontsource/inter": "^5.2.5",
+    "cross-env": "^7.0.3",
+    "sharp": "^0.34.4",
+    "typescript": "^5.9.3"
+  }
+}

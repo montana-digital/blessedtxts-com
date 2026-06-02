@@ -1,0 +1,72 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { SITE_NAME, headerNav } from '../site.config';
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+function isActiveNav(url: string): boolean {
+  const normalized = url.replace(/\/$/, '') || '/';
+  if (normalized === '/') return pathname === '/';
+  return pathname === normalized || pathname.startsWith(`${normalized}/`);
+}
+---
+
+<header class="site-header">
+  <nav class="site-header__inner" aria-label="Main">
+    <div class="site-header__bar">
+      <a href="/" class="site-header__brand"><strong>{SITE_NAME}</strong></a>
+
+      <div class="site-header__nav site-header__nav--desktop">
+        {headerNav.map((item) => (
+          <a
+            href={item.url}
+            class:list={['site-header__link', { 'site-header__link--active': isActiveNav(item.url) }]}
+            aria-current={isActiveNav(item.url) ? 'page' : undefined}
+          >
+            {item.name}
+          </a>
+        ))}
+      </div>
+
+      <div class="site-header__controls">
+        <ThemeToggle />
+        <button
+          type="button"
+          class="mobile-menu-button"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+          aria-label="Open main menu"
+        >
+          <svg class="icon-menu" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+          </svg>
+          <svg class="icon-x" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="site-header__mobile" data-state="closed">
+      <div class="site-header__mobile-panel">
+        {headerNav.map((item) => (
+          <a
+            href={item.url}
+            class:list={[
+              'site-header__link',
+              'site-header__link--mobile',
+              { 'site-header__link--active': isActiveNav(item.url) },
+            ]}
+            aria-current={isActiveNav(item.url) ? 'page' : undefined}
+          >
+            {item.name}
+          </a>
+        ))}
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  import '../scripts/site-nav.ts';
+</script>

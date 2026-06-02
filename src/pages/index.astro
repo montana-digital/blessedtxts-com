@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlessingGenerator from '../components/BlessingGenerator.astro';
+import { organizationJsonLd, webSiteJsonLd } from '../lib/seo';
+import { HOME_SUBTITLE, pageTitle } from '../site.config';
+---
+
+<BaseLayout
+  title={pageTitle('Free Bible Verse Generator (KJV)')}
+  description="Free random Bible verses from the King James, World English, and Webster translations. Read online or download full Scripture on Blessed Texts."
+  home={true}
+  jsonLd={[webSiteJsonLd(), organizationJsonLd()]}
+>
+  <img
+    src="/logo.webp"
+    alt="Jesus in prayer — Christian artwork for free Bible verses"
+    class="logo"
+    width="360"
+    height="auto"
+    loading="eager"
+  />
+  <header>
+    <h1>Blessed Texts</h1>
+    <p class="subtitle">{HOME_SUBTITLE}</p>
+  </header>
+
+  <BlessingGenerator />
+  <noscript>
+    <div class="verse-panel is-visible" style="display:block">
+      <p>JavaScript is disabled. <a href="/about/">Learn about Blessed Texts</a> or read online.</p>
+    </div>
+  </noscript>
+</BaseLayout>

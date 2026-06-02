@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import BibleVersionIndexSection from '../../components/BibleVersionIndexSection.astro';
+import { VERSIONS } from '../../lib/bible-config';
+import { breadcrumbJsonLd } from '../../lib/seo';
+import { pageTitle } from '../../site.config';
+
+const sections = [
+  { versionId: 'kjv' as const, sectionId: VERSIONS.kjv.routeSlug, navLabel: 'King James' },
+  { versionId: 'web' as const, sectionId: VERSIONS.web.routeSlug, navLabel: 'World' },
+  { versionId: 'webster' as const, sectionId: VERSIONS.webster.routeSlug, navLabel: "Webster's" },
+];
+---
+
+<BaseLayout
+  title={pageTitle('Indexed Bible')}
+  description="Browse every Bible book, search verses, and download the King James, World English, and Webster translations on Blessed Texts."
+  wide={true}
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Indexed Bible' },
+  ])}
+>
+  <Breadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Indexed Bible' },
+  ]} />
+
+  <h1>Indexed Bible</h1>
+  <p class="subtitle">Browse books and search across all translations</p>
+
+  <nav class="indexed-bible-nav" aria-label="Bible translations">
+    {sections.map(({ sectionId, navLabel }) => (
+      <a href={`#${sectionId}`} class="indexed-bible-nav__link" data-section={sectionId}>
+        {navLabel}
+      </a>
+    ))}
+  </nav>
+
+  <div class="indexed-bible-sections">
+    {sections.map(({ versionId, sectionId }) => (
+      <BibleVersionIndexSection versionId={versionId} sectionId={sectionId} />
+    ))}
+  </div>
+</BaseLayout>
+
+<script>
+  import '../../scripts/indexed-bible-nav.ts';
+  import '../../scripts/indexed-bible-book-flair.ts';
+</script>

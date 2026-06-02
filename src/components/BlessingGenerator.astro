@@ -1,0 +1,41 @@
+---
+const poolUrls = {
+  all: '/blessings/pools/all.json',
+  kjvOt: '/blessings/pools/kjv-ot.json',
+  web: '/blessings/pools/web.json',
+  webster: '/blessings/pools/webster.json',
+};
+---
+
+<div id="blessing-generator" class="blessing-generator" data-pool-urls={JSON.stringify(poolUrls)}>
+  <div class="blessing-generator__versions">
+    <button type="button" class="btn btn--version" id="btn-kjv-ot" data-pool="kjvOt" data-label="King James Bible (OT)" title="King James Bible (Old Testament)">
+      KJV
+    </button>
+    <button type="button" class="btn btn--version" id="btn-web" data-pool="web" data-label="World English Bible">
+      World
+    </button>
+    <button type="button" class="btn btn--version" id="btn-webster" data-pool="webster" data-label="Webster Bible">
+      Webster
+    </button>
+  </div>
+  <button type="button" class="btn btn--primary" id="btn-all" data-pool="all">
+    Generate Random Bible Verse
+  </button>
+
+  <aside class="verse-panel" id="verse-panel" aria-live="polite" hidden>
+    <p class="verse-panel__text" id="verse-text"></p>
+    <cite class="verse-panel__cite" id="verse-cite"></cite>
+    <div class="verse-actions">
+      <a class="btn" id="btn-read-context" href="/king-james-bible/read/" hidden>Read in Bible</a>
+      <button type="button" class="btn" id="btn-clear">Clear</button>
+      <button type="button" class="btn" id="btn-download">Download Txt File</button>
+      <button type="button" class="btn" id="btn-bell">Ring the Bell</button>
+    </div>
+  </aside>
+</div>
+
+<script>
+  import { initBlessingGenerator } from '../scripts/blessing.ts';
+  initBlessingGenerator();
+</script>

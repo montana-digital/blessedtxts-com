@@ -1,0 +1,27 @@
+---
+import { getAllBookPaths } from '../../../lib/content';
+import { absoluteUrl } from '../../../lib/seo';
+
+export function getStaticPaths() {
+  return getAllBookPaths();
+}
+
+const { version: routeSlug, book: bookSlug } = Astro.params;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Redirecting…</title>
+  <link rel="canonical" href={absoluteUrl(`/${routeSlug}/read/`)} />
+</head>
+<body>
+  <p>Redirecting to the Bible reader… <a id="fallback" href={`/${routeSlug}/read/#${bookSlug}-1`}>Continue</a></p>
+  <script define:vars={{ routeSlug, bookSlug }}>
+    location.replace(`/${routeSlug}/read/#${bookSlug}-1`);
+  </script>
+</body>
+</html>

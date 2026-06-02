@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { VERSIONS } from '../../lib/bible-config';
+import { breadcrumbJsonLd } from '../../lib/seo';
+import { truncateMetaDescription } from '../../lib/meta-description';
+import {
+  buildTopicExcerpts,
+  formatTopicLabel,
+  loadTopicsIndex,
+} from '../../lib/topic-seo';
+import { pageTitle } from '../../site.config';
+
+export function getStaticPaths() {
+  const topics = loadTopicsIndex(process.cwd());
+  return Object.keys(topics).map((topic) => ({ params: { topic } }));
+}
+
+const { topic } = Astro.params;
+const topics = loadTopicsIndex(process.cwd());
+const entry = topics[topic!];
+if (!entry) throw new Error(`Unknown topic: ${topic}`);
+
+const label = formatTopicLabel(topic!);
+const keywords = entry.keywords.join(', ');
+const excerpts = buildTopicExcerpts(process.cwd(), topic!, topics, 12);
+const kjvReader = `/${VERSIONS.kjv.routeSlug}/read/`;
+const topicDescription = truncateMetaDescription(
+  `Explore King James Bible verses about ${label.toLowerCase()} on Blessed Texts. Read curated excerpts and open each passage in the full searchable KJV reader.`,
+);
+---
+
+<BaseLayout
+  title={pageTitle(`Bible Verses About ${label}`)}
+  description={topicDescription}
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Topics', url: '/topics/' },
+    { name: label },
+  ])}
+>
+  <Breadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Topics', href: '/topics/' },
+    { label },
+  ]} />
+
+  <h1>Bible verses about {label.toLowerCase()}</h1>
+  <p class="subtitle">
+    Related words: {keywords}. Passages below are from the King James Bible. Open any verse in the
+    <a href={kjvReader}>KJV reader</a> or browse <a href="/indexed-bible/">all translations</a>.
+  </p>
+
+  <ol class="topic-verses">
+    {excerpts.map((ex) => (
+      <li>
+        <p class="topic-verse-ref">
+          <a href={ex.readerHref}>{ex.ref}</a>
+        </p>
+        <blockquote cite={ex.readerHref}>
+          <p>{ex.text}</p>
+        </blockquote>
+      </li>
+    ))}
+  </ol>
+
+  {excerpts.length === 0 && (
+    <p>No verses could be loaded for this topic. Run <code>npm run prebuild</code> and rebuild.</p>
+  )}
+
+  <p>
+    <a href="/topics/">All Bible topics</a>
+  </p>
+</BaseLayout>
+
+<style>
+  .topic-verses {
+    margin: 1.5rem 0;
+    padding: 0;
+    list-style: none;
+  }
+  .topic-verses li {
+    margin-bottom: 1.25rem;
+  }
+  .topic-verse-ref {
+    margin: 0 0 0.35rem;
+    font-weight: 600;
+  }
+  .topic-verses blockquote {
+    margin: 0;
+    padding-left: 1rem;
+    border-left: 3px solid var(--accent, #b45309);
+  }
+</style>

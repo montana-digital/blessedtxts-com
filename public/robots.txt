@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# AI site guide (llms.txt) for assistants and crawlers:
+# https://blessedtxts.com/llms.txt
+Sitemap: https://blessedtxts.com/sitemap-index.xml

@@ -1,0 +1,53 @@
+---
+import BibleSearch from './BibleSearch.astro';
+import DownloadBar from './DownloadBar.astro';
+import {
+  VERSIONS,
+  OT_BOOKS,
+  NT_BOOKS,
+  bookToSlug,
+  slugToBook,
+  type VersionId,
+} from '../lib/bible-config';
+import { listBooks } from '../lib/content';
+
+interface Props {
+  versionId: VersionId;
+  sectionId: string;
+}
+
+const { versionId, sectionId } = Astro.props;
+const meta = VERSIONS[versionId];
+const routeSlug = meta.routeSlug;
+const bookSlugs = listBooks(versionId);
+const otSlugs = OT_BOOKS.map(bookToSlug).filter((s) => bookSlugs.includes(s));
+const ntSlugs = NT_BOOKS.map(bookToSlug).filter((s) => bookSlugs.includes(s));
+---
+
+<section class="bible-version-index" aria-labelledby={sectionId}>
+  <h2 id={sectionId} class="bible-version-index__heading">{meta.label}</h2>
+
+  <p class="reader-cta">
+    Read the Full {meta.label} Here —
+    <a href={`/${routeSlug}/read/`} class="reader-cta__link">Full Bible reader</a>
+    {' · '}
+    <a href="/topics/">Browse by topic</a>
+  </p>
+
+  <BibleSearch translationId={versionId} translationLabel={meta.label} readerRoute={`/${routeSlug}/read/`} />
+  <DownloadBar versionId={versionId} label={meta.label} scopeLabel={`Full ${meta.label}`} />
+
+  <h3 class="section-title">Old Testament</h3>
+  <div class="book-grid">
+    {otSlugs.map((slug) => (
+      <a href={`/${routeSlug}/read/#${slug}`}>{slugToBook(slug)}</a>
+    ))}
+  </div>
+
+  <h3 class="section-title">New Testament</h3>
+  <div class="book-grid">
+    {ntSlugs.map((slug) => (
+      <a href={`/${routeSlug}/read/#${slug}`}>{slugToBook(slug)}</a>
+    ))}
+  </div>
+</section>

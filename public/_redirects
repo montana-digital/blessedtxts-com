@@ -1,0 +1,17 @@
+# Version root → Indexed Bible anchor
+/king-james-bible/ /indexed-bible/#king-james-bible 301
+/world-english-bible/ /indexed-bible/#world-english-bible 301
+/websters-bible/ /indexed-bible/#websters-bible 301
+
+# Book → reader
+/king-james-bible/:book /king-james-bible/read/#:book-1 301
+/world-english-bible/:book /world-english-bible/read/#:book-1 301
+/websters-bible/:book /websters-bible/read/#:book-1 301
+
+# Chapter → reader passage hash
+/king-james-bible/:book/:chapter /king-james-bible/read/#:book-:chapter 301
+/world-english-bible/:book/:chapter /world-english-bible/read/#:book-:chapter 301
+/websters-bible/:book/:chapter /websters-bible/read/#:book-:chapter 301
+
+# Legacy hub
+/bible-versions/ /about/ 301

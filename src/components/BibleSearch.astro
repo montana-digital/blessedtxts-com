@@ -1,0 +1,34 @@
+---
+interface Props {
+  translationId: string;
+  translationLabel: string;
+  readerRoute?: string;
+}
+
+const { translationId, translationLabel, readerRoute } = Astro.props;
+---
+
+<div class="search-box" data-translation={translationId} data-label={translationLabel} data-reader-route={readerRoute || ''}>
+  <label for={`search-${translationId}`}>Search {translationLabel}</label>
+  <div class="reader-search-input-wrap">
+    <input
+      type="search"
+      id={`search-${translationId}`}
+      placeholder="Verse reference, keyword, or phrase..."
+      autocomplete="off"
+      aria-controls={`suggest-${translationId}`}
+    />
+    <ul class="reader-search-suggest" id={`suggest-${translationId}`} role="listbox" hidden></ul>
+  </div>
+  <ul class="search-results" id={`results-${translationId}`} hidden></ul>
+</div>
+
+<script>
+  import { initSearch } from '../scripts/search-ui.ts';
+  document.querySelectorAll('.search-box[data-translation]').forEach((el) => {
+    const id = el.getAttribute('data-translation');
+    const label = el.getAttribute('data-label');
+    const readerRoute = el.getAttribute('data-reader-route') || undefined;
+    if (id && label) initSearch(id, label, readerRoute || undefined);
+  });
+</script>

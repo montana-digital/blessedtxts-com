@@ -1,0 +1,108 @@
+---
+import fs from 'fs';
+import path from 'path';
+import type { VersionId } from '../lib/bible-config';
+import {
+  POPULAR_PASSAGES,
+  popularPassageHash,
+  renderChapterSectionHtml,
+} from '../lib/reader-ssr';
+import type { ChapterData } from '../lib/reader-types';
+
+interface Props {
+  versionId: VersionId;
+  routeSlug: string;
+  translationLabel: string;
+}
+
+const { versionId, routeSlug, translationLabel } = Astro.props;
+const root = process.cwd();
+
+function loadChapter(bookSlug: string, chapter: number): ChapterData | null {
+  const p = path.join(root, 'public', 'bibles', versionId, bookSlug, `${chapter}.json`);
+  if (!fs.existsSync(p)) return null;
+  return JSON.parse(fs.readFileSync(p, 'utf8')) as ChapterData;
+}
+
+const seoChapterRefs: { book: string; chapter: number }[] = [
+  { book: 'genesis', chapter: 1 },
+  ...POPULAR_PASSAGES.map((p) => ({ book: p.book, chapter: p.chapter })),
+];
+
+const seen = new Set<string>();
+const noscriptChapters: ChapterData[] = [];
+for (const ref of seoChapterRefs) {
+  const key = `${ref.book}:${ref.chapter}`;
+  if (seen.has(key)) continue;
+  seen.add(key);
+  const ch = loadChapter(ref.book, ref.chapter);
+  if (ch) noscriptChapters.push(ch);
+}
+
+const readBase = `/${routeSlug}/read/`;
+---
+
+<section class="reader-seo-preview" aria-label={`${translationLabel} reading guide`}>
+  <p class="reader-seo-preview__lead">
+    Read the full <strong>{translationLabel}</strong> below with search, bookmarks, and downloads.
+    Jump to a popular passage or scroll through every book in the reader.
+  </p>
+
+  <nav class="reader-seo-preview__popular" aria-label="Popular passages">
+    <h2 class="reader-seo-preview__popular-title">Popular passages</h2>
+    <ul>
+      {POPULAR_PASSAGES.map((p) => (
+        <li>
+          <a href={`${readBase}#${popularPassageHash(p.book, p.chapter, p.verse)}`}>{p.label}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</section>
+
+<noscript>
+  {noscriptChapters.map((ch) => (
+    <article class="reader-seo-preview__chapter">
+      <h2 class="reader-book-title">{ch.book} {ch.chapter}</h2>
+      <Fragment set:html={renderChapterSectionHtml(ch)} />
+    </article>
+  ))}
+  <p>
+    JavaScript is required for the full scrollable reader. Browse the
+    <a href="/indexed-bible/">Indexed Bible</a>, download files from
+    <a href="/downloads/">Downloads</a>, or read topic collections on
+    <a href="/topics/">Bible topics</a>.
+  </p>
+</noscript>
+
+<style>
+  .reader-seo-preview {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+  }
+  .reader-seo-preview__lead {
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+    color: var(--text-muted, #64748b);
+  }
+  .reader-seo-preview__popular-title {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem;
+  }
+  .reader-seo-preview__popular ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    columns: 2;
+    gap: 0.25rem 1.5rem;
+  }
+  @media (max-width: 640px) {
+    .reader-seo-preview__popular ul {
+      columns: 1;
+    }
+  }
+  .reader-seo-preview__chapter {
+    margin-bottom: 2rem;
+  }
+</style>
+

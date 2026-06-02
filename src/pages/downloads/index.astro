@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { VERSIONS } from '../../lib/bible-config';
+import { breadcrumbJsonLd } from '../../lib/seo';
+import { pageTitle } from '../../site.config';
+
+const versions = Object.values(VERSIONS);
+const enablePdf = import.meta.env.PUBLIC_ENABLE_PDF === '1';
+---
+
+<BaseLayout
+  title={pageTitle(enablePdf ? 'Download Bible Text (TXT, MD, PDF)' : 'Download Bible Text (TXT, MD)')}
+  description={enablePdf
+    ? 'Download free King James, World English, and Webster Bible files — full text, per book, or per chapter in TXT, Markdown, and PDF.'
+    : 'Download free King James, World English, and Webster Bible files — full text, per book, or per chapter in TXT and Markdown.'}
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Downloads' },
+  ])}
+>
+  <Breadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Downloads' },
+  ]} />
+
+  <h1>Download Bible files</h1>
+  <p class="subtitle">
+    Public-domain Scripture in plain text and Markdown{enablePdf ? ', and PDF' : ''}.
+    Files are generated at build time and hosted on Blessed Texts.
+    {!enablePdf && (
+      <span> PDF downloads are available when the site is built with full PDF generation enabled.</span>
+    )}
+  </p>
+
+  {versions.map((v) => (
+    <section class="downloads-version">
+      <h2>{v.label}</h2>
+      <p>{v.facts}</p>
+      <ul>
+        <li><a href={`/downloads/${v.id}/full.txt`}>Full Bible (.txt)</a></li>
+        <li><a href={`/downloads/${v.id}/full.md`}>Full Bible (.md)</a></li>
+        {enablePdf && (
+          <li><a href={`/downloads/${v.id}/full.pdf`}>Full Bible (.pdf)</a></li>
+        )}
+        <li><a href={`/${v.routeSlug}/read/`}>Read {v.shortLabel} online</a></li>
+        <li><a href={`/translations/${v.routeSlug}/`}>About {v.label}</a></li>
+      </ul>
+      <p class="downloads-hint">
+        Per-book and per-chapter files: <code>/downloads/{v.id}/{'{book}'}/{'{chapter}'}.txt</code>
+        {enablePdf ? ' (and .md / .pdf)' : ' (and .md)'}.
+        Example: <a href={`/downloads/${v.id}/genesis/1.txt`}>Genesis 1 (.txt)</a>
+        {enablePdf && (
+          <>
+            {' · '}
+            <a href={`/downloads/${v.id}/genesis/1.pdf`}>Genesis 1 (.pdf)</a>
+          </>
+        )}
+      </p>
+    </section>
+  ))}
+
+  <p>
+    <a href="/indexed-bible/">Indexed Bible</a> for browsing · <a href="/topics/">Verse topics</a>
+  </p>
+</BaseLayout>
+
+<style>
+  .downloads-version {
+    margin: 1.5rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+  }
+  .downloads-hint {
+    font-size: 0.9rem;
+    color: var(--text-muted, #64748b);
+  }
+</style>

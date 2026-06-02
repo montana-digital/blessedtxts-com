@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { breadcrumbJsonLd } from '../../lib/seo';
+import { pageTitle } from '../../site.config';
+---
+
+<BaseLayout
+  title={pageTitle('Contact')}
+  description="Contact Blessed Texts for questions, feedback, or translation suggestions. We read messages when we can and welcome ideas for the project."
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Contact' },
+  ])}
+>
+  <h1>Contact</h1>
+  <p class="subtitle">
+    Blessed Texts is an independent project. Send questions, feedback, or translation suggestions;
+    we read messages when we can and appreciate hearing from you.
+  </p>
+
+  <form id="contact-form" class="contact-form" novalidate>
+    <div class="contact-form__field">
+      <label for="contact-name">Name</label>
+      <input
+        type="text"
+        id="contact-name"
+        name="name"
+        autocomplete="name"
+        required
+      />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="contact-email">Email</label>
+      <input
+        type="email"
+        id="contact-email"
+        name="email"
+        autocomplete="email"
+        required
+      />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="contact-message">Message</label>
+      <textarea
+        id="contact-message"
+        name="message"
+        rows="6"
+        required
+      ></textarea>
+    </div>
+
+    <button type="submit" class="btn btn--primary">Send</button>
+
+    <p id="contact-status" class="contact-form__status" role="status" aria-live="polite" hidden></p>
+  </form>
+</BaseLayout>
+
+<script>
+  import '../../scripts/contact-form.ts';
+</script>

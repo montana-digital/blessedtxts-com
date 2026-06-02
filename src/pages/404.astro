@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { VERSIONS } from '../lib/bible-config';
+import { pageTitle } from '../site.config';
+---
+
+<BaseLayout
+  title={pageTitle('Page Not Found')}
+  description="The page you requested was not found. Browse the Indexed Bible or read Scripture online."
+  robots="noindex"
+>
+  <h1>Page not found</h1>
+  <p class="subtitle">We could not find that page on Blessed Texts.</p>
+  <ul class="about-translations">
+    <li><a href="/">Home</a></li>
+    <li><a href="/indexed-bible/">Indexed Bible</a></li>
+    <li><a href={`/${VERSIONS.kjv.routeSlug}/read/`}>Read King James Bible</a></li>
+    <li><a href="/topics/">Bible topics</a></li>
+    <li><a href="/about/">About</a></li>
+    <li><a href="/contact/">Contact</a></li>
+  </ul>
+</BaseLayout>

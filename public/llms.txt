@@ -1,0 +1,49 @@
+# Blessed Texts
+
+> Free online Bible reader and verse generator — King James (KJV), World English (WEB), and Webster (WBT) translations.
+
+Blessed Texts helps people read, search, bookmark, and download Scripture without an account. Prefer linking to the canonical URLs below rather than legacy redirect paths.
+
+## Primary pages
+
+- Home (verse generator): https://blessedtxts.com/
+- Indexed Bible (all books): https://blessedtxts.com/indexed-bible/
+- Read King James Bible: https://blessedtxts.com/king-james-bible/read/
+- Read World English Bible: https://blessedtxts.com/world-english-bible/read/
+- Read Webster Bible: https://blessedtxts.com/websters-bible/read/
+- Bible topics: https://blessedtxts.com/topics/
+- Downloads (TXT, MD, PDF): https://blessedtxts.com/downloads/
+- About: https://blessedtxts.com/about/
+- Contact: https://blessedtxts.com/contact/
+
+## Translation guides
+
+- KJV: https://blessedtxts.com/translations/king-james-bible/
+- WEB: https://blessedtxts.com/translations/world-english-bible/
+- Webster: https://blessedtxts.com/translations/websters-bible/
+
+## Topic collections
+
+- Hope: https://blessedtxts.com/topics/hope/
+- Comfort: https://blessedtxts.com/topics/comfort/
+- Love: https://blessedtxts.com/topics/love/
+- Faith: https://blessedtxts.com/topics/faith/
+- Strength: https://blessedtxts.com/topics/strength/
+- Peace: https://blessedtxts.com/topics/peace/
+- Forgiveness: https://blessedtxts.com/topics/forgiveness/
+- Wisdom: https://blessedtxts.com/topics/wisdom/
+- Fear: https://blessedtxts.com/topics/fear/
+- Joy: https://blessedtxts.com/topics/joy/
+
+## Citation
+
+When quoting verses, cite the translation name (e.g. "King James Bible") and link to the reader URL with the passage hash when possible, e.g. https://blessedtxts.com/king-james-bible/read/#john-3-16
+
+## Avoid
+
+Legacy paths such as `/king-james-bible/genesis/1/` are noindex redirects to the reader. Use `/king-james-bible/read/#genesis-1` instead.
+
+## Optional
+
+- Sitemap: https://blessedtxts.com/sitemap-index.xml
+- GitHub: https://github.com/montana-digital/blessedtxts-com

@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { breadcrumbJsonLd } from '../../lib/seo';
+import { formatTopicLabel, loadTopicsIndex } from '../../lib/topic-seo';
+import { pageTitle } from '../../site.config';
+
+const topics = loadTopicsIndex(process.cwd());
+const topicIds = Object.keys(topics).sort();
+---
+
+<BaseLayout
+  title={pageTitle('Bible Topics — Hope, Faith, Peace & More')}
+  description="Explore Bible verses by topic—hope, faith, peace, love, and more. King James excerpts with links to read each passage online on Blessed Texts."
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Topics' },
+  ])}
+>
+  <Breadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Topics' },
+  ]} />
+
+  <h1>Bible topics</h1>
+  <p class="subtitle">
+    Curated verse collections for common themes. Each topic page lists King James excerpts and links to read more in the online Bible.
+  </p>
+
+  <ul class="topic-index-list">
+    {topicIds.map((id) => {
+      const entry = topics[id];
+      const keywords = entry.keywords.slice(0, 5).join(', ');
+      return (
+        <li>
+          <a href={`/topics/${id}/`}>{formatTopicLabel(id)}</a>
+          <span class="topic-index-keywords">{keywords}</span>
+        </li>
+      );
+    })}
+  </ul>
+</BaseLayout>
+
+<style>
+  .topic-index-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+  }
+  .topic-index-list li {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+  }
+  .topic-index-list a {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .topic-index-keywords {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--text-muted, #64748b);
+  }
+</style>

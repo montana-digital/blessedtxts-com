@@ -1,0 +1,95 @@
+---
+import SiteHeader from '../components/SiteHeader.astro';
+import SeoHead from '../components/SeoHead.astro';
+import { AHREFS_ANALYTICS_KEY, MONTANA_DIGITAL_URL, SITE_NAME, footerNav } from '../site.config';
+import { absoluteUrl } from '../lib/seo';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  wide?: boolean;
+  home?: boolean;
+  robots?: string;
+  ogImage?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const { title, description, canonical, wide = false, home = false, robots, ogImage, jsonLd } =
+  Astro.props;
+const canonicalUrl = canonical || absoluteUrl(Astro.url.pathname);
+const mainClass = home ? 'page-main page-main--home' : wide ? 'page-main page-main--wide' : 'page-main';
+const bodyClass = home ? 'body--home' : '';
+const enableAhrefs = import.meta.env.PUBLIC_ENABLE_AHREFS === '1';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <SeoHead
+    title={title}
+    description={description}
+    canonical={canonicalUrl}
+    robots={robots}
+    ogImage={ogImage}
+    jsonLd={jsonLd}
+  />
+  {enableAhrefs && (
+    <script
+      is:inline
+      src="https://analytics.ahrefs.com/analytics.js"
+      data-key={AHREFS_ANALYTICS_KEY}
+      async
+    ></script>
+  )}
+  <script is:inline>
+    try {
+      const stored = localStorage.getItem('theme');
+      const isDark = stored ? stored === 'dark' : true;
+      document.documentElement.classList.toggle('dark', isDark);
+    } catch (_) {}
+  </script>
+</head>
+<body class={bodyClass}>
+  <SiteHeader />
+  <main id="main-content" class={mainClass}>
+    <slot />
+  </main>
+  <footer class="site-footer">
+    <p class="site-footer__line">
+      <time id="footer-date" datetime=""></time>
+    </p>
+    <nav class="site-footer__nav" aria-label="Site">
+      {footerNav.map((item) => (
+        <a href={item.url}>{item.name}</a>
+      ))}
+    </nav>
+    <p class="site-footer__line">
+      <a href="/">{SITE_NAME}</a>
+      <span aria-hidden="true"> | </span>
+      <a href={MONTANA_DIGITAL_URL} rel="noopener noreferrer">Montana Digital</a>
+    </p>
+  </footer>
+  <div id="site-overlay" class="site-overlay is-hidden" aria-hidden="true"></div>
+</body>
+</html>
+
+<script>
+  import '../scripts/overlay.ts';
+  import '../scripts/footer-date.ts';
+</script>
+
+<style>
+  .site-footer__nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+  }
+  .site-footer__nav a {
+    text-decoration: underline;
+  }
+</style>

@@ -1,0 +1,19 @@
+---
+import { VERSIONS, type VersionId } from '../lib/bible-config';
+
+interface Props {
+  currentVersionId: VersionId;
+}
+
+const { currentVersionId } = Astro.props;
+const versions = Object.values(VERSIONS);
+---
+
+<div class="reader-translation" id="reader-translation" aria-label="Bible translation">
+  <label for="reader-translation-select" class="reader-translation-label">Bible Translation:</label>
+  <select id="reader-translation-select" class="reader-translation-select">
+    {versions.map((v) => (
+      <option value={v.routeSlug} selected={v.id === currentVersionId}>{v.label}</option>
+    ))}
+  </select>
+</div>

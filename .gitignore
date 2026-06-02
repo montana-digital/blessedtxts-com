@@ -1,0 +1,35 @@
+node_modules/
+dist/
+.astro/
+public/downloads/
+.DS_Store
+*.log
+.env
+.cache
+test-results/
+playwright-report/
+
+# Unused source audio (site uses public/bell.wav)
+church-bell-sound-effect-241382.mp3
+
+# Local-only — not published
+tests/
+docs/
+GITHUB-CLOUDFLARE-DEPLOYMENT.md
+.github/
+vitest.config.ts
+playwright.config.ts
+
+# Generated at prebuild
+src/data/bibles/
+src/data/search/
+src/data/bible-manifest.json
+src/data/verses-*.json
+public/bibles/
+public/search/
+public/blessings/pools/
+public/blessings/blessing-*.txt
+
+# IndexNow — copy indexnow.config.example.json locally; key also via INDEXNOW_KEY on deploy
+indexnow.config.json
+/public/[0-9a-f][0-9a-f]*.txt

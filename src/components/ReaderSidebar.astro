@@ -1,0 +1,42 @@
+---
+import { formatTopicLabel, loadTopicsIndex } from '../lib/topic-seo';
+
+const topics = loadTopicsIndex(process.cwd());
+const topicIds = Object.keys(topics).sort();
+---
+
+<aside class="reader-sidebar" aria-label="Bible navigation">
+  <section class="reader-sidebar-section">
+    <h2 class="reader-sidebar-heading">Topics</h2>
+    <div id="reader-topics-nav" class="reader-topics-nav"></div>
+    <h3 class="reader-sidebar-heading reader-topics-verse-lists-heading">Topics Verse Lists</h3>
+    <nav class="reader-topics-pages" aria-label="Topic verse list pages">
+      {topicIds.map((id) => (
+        <a href={`/topics/${id}/`} class="reader-topics-pages__link">{formatTopicLabel(id)}</a>
+      ))}
+      <a href="/topics/" class="reader-topics-pages__all">All topics</a>
+    </nav>
+  </section>  <section class="reader-sidebar-section">
+    <h2 class="reader-sidebar-heading">Bookmarks</h2>
+    <div id="reader-bookmarks-nav" class="reader-bookmarks-nav"></div>
+  </section>
+</aside>
+
+<style>
+  .reader-topics-verse-lists-heading {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .reader-topics-pages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    margin-top: 0;
+    font-size: 0.8rem;
+  }
+  .reader-topics-pages__link,
+  .reader-topics-pages__all {
+    text-decoration: underline;
+  }
+</style>

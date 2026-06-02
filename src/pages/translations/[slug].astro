@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { VERSIONS } from '../../lib/bible-config';
+import { breadcrumbJsonLd } from '../../lib/seo';
+import { pageTitle } from '../../site.config';
+
+export function getStaticPaths() {
+  return Object.values(VERSIONS).map((v) => ({
+    params: { slug: v.routeSlug },
+    props: { meta: v },
+  }));
+}
+
+const { meta } = Astro.props;
+const readUrl = `/${meta.routeSlug}/read/`;
+---
+
+<BaseLayout
+  title={pageTitle(`${meta.label} — Translation Guide`)}
+  description={meta.seoDescription}
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Translations', url: '/indexed-bible/' },
+    { name: meta.label },
+  ])}
+>
+  <Breadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Indexed Bible', href: '/indexed-bible/' },
+    { label: meta.label },
+  ]} />
+
+  <h1>{meta.label}</h1>
+  <p class="subtitle">{meta.shortLabel} — free online on Blessed Texts</p>
+
+  <div class="about-content">
+    <p>{meta.facts}</p>
+    <p>
+      Use Blessed Texts to read the entire {meta.label} in one continuous view, search by keyword or reference,
+      bookmark verses, and switch between King James, World English, and Webster translations.
+    </p>
+    <p>
+      <a class="btn" href={readUrl}>Read {meta.label} online</a>
+      {' '}
+      <a href={`/indexed-bible/#${meta.routeSlug}`}>Browse books</a>
+      {' · '}
+      <a href="/downloads/">Download files</a>
+    </p>
+  </div>
+</BaseLayout>
