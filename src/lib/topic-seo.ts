@@ -15,8 +15,14 @@ export interface TopicsIndex {
 
 export function loadTopicsIndex(root: string): TopicsIndex {
   const p = path.join(root, 'public', 'search', 'topics-index.json');
+  if (!fs.existsSync(p)) {
+    throw new Error(
+      'Missing public/search/topics-index.json. Run npm run prebuild (or npm run dev:full / npm run build:fast).',
+    );
+  }
   return JSON.parse(fs.readFileSync(p, 'utf8')) as TopicsIndex;
 }
+
 export function parseVerseRef(ref: string): {
   versionId: VersionId;
   bookSlug: string;

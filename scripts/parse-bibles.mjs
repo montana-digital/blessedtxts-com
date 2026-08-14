@@ -14,6 +14,7 @@ const CONTENT_DIR = path.join(ROOT, 'src', 'data', 'bibles');
 const DATA_DIR = path.join(ROOT, 'src', 'data');
 
 const VERSE_RE = /^(.+?)\s+(\d+):(\d+)\t(.+)$/;
+const MIN_VERSES = 30000;
 
 function parseRawFile(filePath) {
   const lines = fs.readFileSync(filePath, 'utf8').split(/\r?\n/);
@@ -130,6 +131,12 @@ async function main() {
     }
     const { header, verses } = parseRawFile(rawPath);
     console.log(`   ${version.label}: ${verses.length} verses`);
+    if (verses.length < MIN_VERSES) {
+      console.error(
+        `${version.label} parsed ${verses.length} verses (expected at least ${MIN_VERSES}). Check ${rawPath}.`,
+      );
+      process.exit(1);
+    }
 
     const chapters = groupChapters(verses, version);
     writeChapterFiles(version.id, chapters);

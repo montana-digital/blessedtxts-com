@@ -13,6 +13,7 @@ playwright-report/
 church-bell-sound-effect-241382.mp3
 
 # Local-only — not published
+scripts/generate-downloads-sample.mjs
 tests/
 docs/
 GITHUB-CLOUDFLARE-DEPLOYMENT.md

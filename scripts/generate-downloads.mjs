@@ -97,7 +97,14 @@ function loadAllChapters(versionId) {
 
 async function main() {
   console.log('📥 Generating downloads...\n');
-  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'src', 'data', 'bible-manifest.json'), 'utf8'));
+  const manifestPath = path.join(ROOT, 'src', 'data', 'bible-manifest.json');
+  if (!fs.existsSync(manifestPath)) {
+    console.error(
+      'Missing src/data/bible-manifest.json. Run npm run prebuild (or npm run dev:full / npm run build:fast).',
+    );
+    process.exit(1);
+  }
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const versions = Object.values(VERSIONS).filter(
     (v) => !ONLY_VERSION || v.id === ONLY_VERSION,
   );
