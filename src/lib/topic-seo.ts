@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import type { ChapterData } from './reader-types';
 import { VERSIONS, slugToBook, type VersionId } from './bible-config';
+import { loadChapter } from './load-chapter';
 import { formatTopicLabel } from './topic-label';
 
 export { formatTopicLabel };
@@ -37,23 +37,6 @@ export function parseVerseRef(ref: string): {
   const verse = parseInt(verseStr, 10);
   if (!bookSlug || !chapter || !verse) return null;
   return { versionId: versionId as VersionId, bookSlug, chapter, verse };
-}
-
-const chapterCache = new Map<string, ChapterData>();
-
-export function loadChapter(
-  root: string,
-  versionId: VersionId,
-  bookSlug: string,
-  chapter: number,
-): ChapterData | null {
-  const key = `${versionId}/${bookSlug}/${chapter}`;
-  if (chapterCache.has(key)) return chapterCache.get(key)!;
-  const p = path.join(root, 'public', 'bibles', versionId, bookSlug, `${chapter}.json`);
-  if (!fs.existsSync(p)) return null;
-  const data = JSON.parse(fs.readFileSync(p, 'utf8')) as ChapterData;
-  chapterCache.set(key, data);
-  return data;
 }
 
 export interface TopicVerseExcerpt {

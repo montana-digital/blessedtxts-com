@@ -1,17 +1,12 @@
 ---
 import fs from 'fs';
 import path from 'path';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import DownloadBar from '../../components/DownloadBar.astro';
-import ReaderSearch from '../../components/ReaderSearch.astro';
-import ReaderSidebar from '../../components/ReaderSidebar.astro';
-import ReaderTranslation from '../../components/ReaderTranslation.astro';
-import { VERSIONS, routeSlugToId } from '../../lib/bible-config';
-import type { ReaderManifest } from '../../lib/reader-types';
-import ReaderSeoPreview from '../../components/ReaderSeoPreview.astro';
-import { absoluteUrl, bookJsonLd, breadcrumbJsonLd } from '../../lib/seo';
-import { pageTitle } from '../../site.config';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ReaderShell from '@/components/ReaderShell.astro';
+import { VERSIONS, routeSlugToId } from '@/lib/bible-config';
+import type { ReaderManifest } from '@/lib/reader-types';
+import { absoluteUrl, bookJsonLd, breadcrumbJsonLd } from '@/lib/seo';
+import { pageTitle } from '@/site.config';
 
 export function getStaticPaths() {
   return Object.values(VERSIONS).map((v) => ({ params: { version: v.routeSlug } }));
@@ -48,84 +43,11 @@ if (fs.existsSync(manifestPath)) {
     }),
   ]}
 >
-  <a href="#reader-content" class="skip-link">Skip to Bible text</a>
-
-  <Breadcrumbs items={[
-    { label: 'Home', href: '/' },
-    { label: meta.label, href: `/translations/${routeSlug}/` },
-    { label: 'Read' },
-  ]} />
-
-  <div class="reader-page">
-    <div class="reader-main">
-      <button
-        type="button"
-        id="reader-nav-open"
-        class="reader-nav-toggle"
-        aria-expanded="false"
-        aria-controls="reader-sidebar-drawer"
-      >
-        Navigation
-      </button>
-      <h1 class="reader-title">{meta.label}</h1>
-      <p class="reader-version-facts">{meta.facts}</p>
-
-      <div id="reader-status" class="reader-status" role="status" aria-live="polite" hidden></div>
-
-      <ReaderTranslation currentVersionId={versionId} />
-      <ReaderSearch translationLabel={meta.label} />
-      <DownloadBar
-        versionId={versionId}
-        label={meta.label}
-        scopeLabel={`Full ${meta.label}`}
-      />
-
-      <hr class="reader-toolbar-divider" />
-
-      <ReaderSeoPreview versionId={versionId} routeSlug={routeSlug!} translationLabel={meta.label} />
-
-      <div id="reader-content" class="reader-content" tabindex="-1"></div>
-    </div>
-
-    <div id="reader-drawer-backdrop" class="reader-drawer-backdrop"></div>
-    <div id="reader-sidebar-drawer" class="reader-sidebar-drawer" role="dialog" aria-modal="true" aria-label="Bible navigation">
-      <button type="button" id="reader-nav-close" class="reader-nav-close" aria-label="Close navigation">×</button>
-      <ReaderSidebar />
-    </div>
-  </div>
-
-  <div
-    id="reader-loading-modal"
-    class="reader-loading-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="reader-loading-title"
-    aria-hidden="true"
-    hidden
-  >
-    <div class="reader-loading-modal__panel" tabindex="-1">
-      <p id="reader-loading-title" class="reader-loading-modal__title">Loading Bible verses…</p>
-      <p id="reader-loading-hint" class="reader-loading-modal__hint">Please wait a moment.</p>
-      <div class="reader-loading-modal__spinner" aria-hidden="true"></div>
-    </div>
-  </div>
-
-  <nav id="reader-verse-toolbar" class="reader-verse-toolbar" aria-label="Verse actions" hidden>
-    <p class="reader-verse-toolbar-ref" id="reader-verse-toolbar-ref" aria-live="polite"></p>
-    <div class="reader-verse-toolbar-actions">
-      <button type="button" class="btn btn--small" data-action="bookmark">Add to Bookmarks</button>
-      <button type="button" class="btn btn--small" data-action="copy">Copy</button>
-      <button type="button" class="btn btn--small" data-action="image">Save as image</button>
-    </div>
-  </nav>
-
-  <button type="button" id="reader-back-to-top" class="reader-back-to-top" hidden aria-label="Back to top">
-    ↑ Top
-  </button>
-
-  <script id="reader-manifest-data" type="application/json" set:html={JSON.stringify(manifest)}></script>
-  <script>
-    import { bootReader } from '../../scripts/reader-boot.ts';
-    bootReader();
-  </script>
+  <ReaderShell
+    versionId={versionId}
+    routeSlug={routeSlug!}
+    label={meta.label}
+    facts={meta.facts}
+    manifest={manifest}
+  />
 </BaseLayout>

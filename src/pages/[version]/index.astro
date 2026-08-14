@@ -1,6 +1,7 @@
 ---
-import { VERSIONS, routeSlugToId } from '../../lib/bible-config';
-import { absoluteUrl } from '../../lib/seo';
+import RedirectLayout from '@/layouts/RedirectLayout.astro';
+import { VERSIONS, routeSlugToId } from '@/lib/bible-config';
+import { absoluteUrl } from '@/lib/seo';
 
 export function getStaticPaths() {
   return Object.values(VERSIONS).map((v) => ({ params: { version: v.routeSlug } }));
@@ -12,19 +13,8 @@ if (!versionId) throw new Error(`Unknown version: ${routeSlug}`);
 const redirectUrl = `/indexed-bible/#${routeSlug}`;
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex" />
-  <title>Redirecting…</title>
-  <link rel="canonical" href={absoluteUrl('/indexed-bible/')} />
-</head>
-<body>
-  <p>Redirecting to Indexed Bible… <a href={redirectUrl}>Continue</a></p>
-  <script is:inline define:vars={{ redirectUrl }}>
-    location.replace(redirectUrl);
-  </script>
-</body>
-</html>
+<RedirectLayout
+  canonical={absoluteUrl('/indexed-bible/')}
+  message="Redirecting to Indexed Bible…"
+  href={redirectUrl}
+/>

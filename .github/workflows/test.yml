@@ -1,0 +1,61 @@
+name: Test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  unit-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run prebuild
+        env:
+          SKIP_PDF: '1'
+
+      - run: npm test
+
+      - run: npm run test:smoke
+
+      - run: npm run check
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run prebuild
+        env:
+          SKIP_PDF: '1'
+
+      - run: npm run build:fast
+        env:
+          SKIP_PDF: '1'
+          PUBLIC_ENABLE_PDF: '0'
+
+      - run: npx playwright install chromium --with-deps
+
+      - run: npm run test:smoke:dist
+        env:
+          REQUIRE_DIST: '1'
+
+      - run: npm run test:e2e
+        env:
+          CI: true

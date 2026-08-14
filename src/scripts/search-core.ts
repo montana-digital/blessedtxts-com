@@ -1,5 +1,6 @@
 import MiniSearch from 'minisearch';
 import { bookToSlug } from '../lib/bible-config';
+import { fetchJson, withOfflinePrefix } from '../lib/fetch-json';
 import { formatTopicLabel } from '../lib/topic-label';
 import { parseReferenceQuery, refKeyFromParsed } from '../lib/reference-parse';
 
@@ -63,12 +64,6 @@ let prefixesCache: Record<string, Record<string, string[]>> = {};
 let refMapCache: Record<string, Record<string, string>> | null = null;
 let synonymsCache: Record<string, string[]> | null = null;
 let topicsCache: Record<string, TopicEntry> | null = null;
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to load ${url} (${res.status})`);
-  return res.json() as Promise<T>;
-}
 
 async function ensureManifest(): Promise<void> {
   if (!manifest) {
@@ -305,7 +300,7 @@ export async function searchVerses(
     return { ok: true, hits: results };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Search unavailable.';
-    return { ok: false, hits: [], error: message };
+    return { ok: false, hits: [], error: withOfflinePrefix(message) };
   }
 }
 
@@ -320,7 +315,7 @@ export async function getTopicHits(translationId: string, topicId: string): Prom
     return { ok: true, hits: ids.map((id) => map[id]).filter(Boolean) };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Topics unavailable.';
-    return { ok: false, hits: [], error: message };
+    return { ok: false, hits: [], error: withOfflinePrefix(message) };
   }
 }
 

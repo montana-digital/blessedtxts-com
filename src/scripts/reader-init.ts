@@ -23,15 +23,14 @@ import { initReaderSearch, getActiveSearchQuery } from './search-ui-reader';
 import { initTopicsBrowse } from './reader-topics';
 import { initTranslationPicker } from './reader-translation';
 import { VERSIONS } from '../lib/bible-config';
+import { fetchJson, SCRIPTURE_DATA_UNAVAILABLE, withOfflinePrefix } from '../lib/fetch-json';
 
 async function ensureManifest(manifest: ReaderManifest): Promise<ReaderManifest> {
   if (manifest.books?.length) return manifest;
   try {
-    const res = await fetch(`/bibles/manifest-${manifest.versionId}.json`);
-    if (res.ok) return (await res.json()) as ReaderManifest;
-    showReaderError('Bible manifest could not be loaded. Run npm run prebuild, then refresh.');
+    return await fetchJson<ReaderManifest>(`/bibles/manifest-${manifest.versionId}.json`);
   } catch {
-    showReaderError('Bible manifest could not be loaded. Check your connection and refresh.');
+    showReaderError(withOfflinePrefix(SCRIPTURE_DATA_UNAVAILABLE));
   }
   return manifest;
 }
@@ -40,18 +39,16 @@ function renderEmptyManifestRetry(manifest: ReaderManifest): void {
   const content = document.getElementById('reader-content');
   if (!content) return;
   content.innerHTML = `
-    <p class="reader-error">No Bible data found for this translation.</p>
-    <p>From the project folder run: <code>npm run prebuild</code> then refresh.</p>
+    <p class="reader-error">${SCRIPTURE_DATA_UNAVAILABLE}</p>
     <button type="button" class="btn" id="reader-retry-manifest">Retry</button>
   `;
   document.getElementById('reader-retry-manifest')?.addEventListener('click', async () => {
-    const res = await fetch(`/bibles/manifest-${manifest.versionId}.json`);
-    if (res.ok) {
-      const m = (await res.json()) as ReaderManifest;
+    try {
+      const m = await fetchJson<ReaderManifest>(`/bibles/manifest-${manifest.versionId}.json`);
       if (m.books?.length) location.reload();
-      else showReaderError('Manifest is still empty after retry.');
-    } else {
-      showReaderError('Manifest still unavailable.');
+      else showReaderError('Scripture data is still empty after retry.');
+    } catch {
+      showReaderError(withOfflinePrefix('Scripture data is still unavailable.'));
     }
   });
 }

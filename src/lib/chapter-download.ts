@@ -1,9 +1,8 @@
-import type { ChapterData } from './reader-types';
-
-const SITE = 'https://blessedtxts.com';
+import type { ChapterData } from '@/lib/reader-types';
+import { SITE_URL } from '@/site-url.mjs';
 
 export function buildChapterTxt(ch: ChapterData): string {
-  let content = `${ch.translationLabel}\nFree from ${SITE}\n\n`;
+  let content = `${ch.translationLabel}\nFree from ${SITE_URL}\n\n`;
   for (const v of ch.verses) {
     content += `${ch.book} ${ch.chapter}:${v.n}\t${v.text}\n`;
   }
@@ -11,7 +10,7 @@ export function buildChapterTxt(ch: ChapterData): string {
 }
 
 export function buildChapterMd(ch: ChapterData): string {
-  let content = `# ${ch.translationLabel}\n\n*Free from [blessedtxts.com](${SITE})*\n\n### ${ch.book} ${ch.chapter}\n\n`;
+  let content = `# ${ch.translationLabel}\n\n*Free from [blessedtxts.com](${SITE_URL})*\n\n### ${ch.book} ${ch.chapter}\n\n`;
   for (const v of ch.verses) {
     content += `${v.n}. ${v.text}\n\n`;
   }

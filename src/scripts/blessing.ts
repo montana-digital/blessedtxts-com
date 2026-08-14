@@ -1,6 +1,7 @@
 import { parseReferenceQuery } from '../lib/reference-parse';
 import { verseAnchor } from '../lib/reader-anchors';
 import { bookToSlug } from '../lib/bible-config';
+import { withOfflinePrefix } from '../lib/fetch-json';
 
 type PoolKey = 'all' | 'kjvOt' | 'web' | 'webster';
 
@@ -129,14 +130,24 @@ export function initBlessingGenerator() {
     if (readLink) readLink.hidden = true;
   }
 
+  function showLoadError() {
+    const message = withOfflinePrefix('Could not load verses. Please try again.');
+    if (textEl) textEl.textContent = message;
+    if (citeEl) citeEl.textContent = '';
+    panel?.removeAttribute('hidden');
+    panel?.classList.add('is-visible');
+    if (readLink) readLink.hidden = true;
+  }
+
   async function pick(poolKey: PoolKey, label?: string) {
-    const prevText = textEl?.textContent;
     if (textEl) textEl.textContent = 'Loading verse…';
+    panel?.removeAttribute('hidden');
+    panel?.classList.add('is-visible');
 
     try {
       const pool = await loadPool(poolKey);
       if (!pool.length) {
-        if (textEl) textEl.textContent = prevText ?? '';
+        showLoadError();
         return;
       }
       const line = pool[Math.floor(Math.random() * pool.length)];
@@ -145,7 +156,7 @@ export function initBlessingGenerator() {
       animate();
       playBell();
     } catch {
-      if (textEl) textEl.textContent = 'Could not load verses. Please try again.';
+      showLoadError();
     }
   }
 

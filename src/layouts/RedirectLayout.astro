@@ -1,0 +1,28 @@
+---
+interface Props {
+  canonical: string;
+  message: string;
+  href: string;
+}
+
+const { canonical, message, href } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Redirecting…</title>
+  <link rel="canonical" href={canonical} />
+</head>
+<body>
+  <p>{message} <a href={href}>Continue</a></p>
+  <slot name="script">
+    <script is:inline define:vars={{ href }}>
+      location.replace(href);
+    </script>
+  </slot>
+</body>
+</html>

@@ -1,9 +1,9 @@
 ---
-import SiteHeader from '../components/SiteHeader.astro';
-import SeoHead from '../components/SeoHead.astro';
-import { AHREFS_ANALYTICS_KEY, MONTANA_DIGITAL_URL, SITE_NAME, footerNav } from '../site.config';
-import { absoluteUrl } from '../lib/seo';
-import '../styles/global.css';
+import SiteHeader from '@/components/SiteHeader.astro';
+import SeoHead from '@/components/SeoHead.astro';
+import { MONTANA_DIGITAL_URL, SITE_NAME, footerNav } from '@/site.config';
+import { absoluteUrl } from '@/lib/seo';
+import '@/styles/global.css';
 
 interface Props {
   title: string;
@@ -22,6 +22,7 @@ const canonicalUrl = canonical || absoluteUrl(Astro.url.pathname);
 const mainClass = home ? 'page-main page-main--home' : wide ? 'page-main page-main--wide' : 'page-main';
 const bodyClass = home ? 'body--home' : '';
 const enableAhrefs = import.meta.env.PUBLIC_ENABLE_AHREFS === '1';
+const ahrefsKey = import.meta.env.PUBLIC_AHREFS_KEY;
 ---
 
 <!DOCTYPE html>
@@ -35,11 +36,11 @@ const enableAhrefs = import.meta.env.PUBLIC_ENABLE_AHREFS === '1';
     ogImage={ogImage}
     jsonLd={jsonLd}
   />
-  {enableAhrefs && (
+  {enableAhrefs && ahrefsKey && (
     <script
       is:inline
       src="https://analytics.ahrefs.com/analytics.js"
-      data-key={AHREFS_ANALYTICS_KEY}
+      data-key={ahrefsKey}
       async
     ></script>
   )}
@@ -76,8 +77,8 @@ const enableAhrefs = import.meta.env.PUBLIC_ENABLE_AHREFS === '1';
 </html>
 
 <script>
-  import '../scripts/overlay.ts';
-  import '../scripts/footer-date.ts';
+  import '@/scripts/overlay.ts';
+  import '@/scripts/footer-date.ts';
 </script>
 
 <style>

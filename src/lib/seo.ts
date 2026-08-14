@@ -1,6 +1,4 @@
-import { SITE_NAME } from '../site.config';
-
-export const SITE_URL = 'https://blessedtxts.com';
+import { SITE_NAME, SITE_URL } from '@/site.config';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 export const OG_IMAGE_ALT = 'Blessed Texts — free online Bible reader and verse generator';
 export const OG_IMAGE_WIDTH = 1200;

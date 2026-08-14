@@ -1,6 +1,8 @@
+import { SITE_URL } from '../src/site-url.mjs';
+
 /** PDF styling aligned with reader UI and verse-image.ts palette. */
 
-export const SITE = 'https://blessedtxts.com';
+export const SITE = SITE_URL;
 
 export const PDF_THEME = {
   gold: '#D4AF37',

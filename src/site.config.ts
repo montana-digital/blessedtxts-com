@@ -1,10 +1,12 @@
 import { VERSIONS } from './lib/bible-config';
+import { SITE_URL } from './site-url.mjs';
+
+export { SITE_URL };
 
 export const SITE_NAME = 'Blessed Texts';
 export const SITE_TITLE_SUFFIX = ` | ${SITE_NAME}`;
 export const MONTANA_DIGITAL_URL = 'https://montanadigital.dev';
 export const GITHUB_REPO_URL = 'https://github.com/montana-digital/blessedtxts-com';
-export const AHREFS_ANALYTICS_KEY = 'sgrlIPQVYVsGp2+/WsuxAw';
 export const HOME_SUBTITLE =
   'Blessed Texts — free random Bible verses from the King James, World English, and Webster translations.';
 

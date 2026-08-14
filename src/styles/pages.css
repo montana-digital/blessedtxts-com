@@ -1,0 +1,461 @@
+.about-content {
+  margin-top: 1.5rem;
+  line-height: 1.7;
+}
+
+.about-content h2 {
+  font-size: 1.25rem;
+  margin: 1.25rem 0 0.35rem;
+}
+
+.about-github {
+  margin: 0.75rem 0 0;
+}
+
+.about-github a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+}
+
+.about-github a:hover {
+  color: var(--gold-bright);
+}
+
+.about-translations {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.about-translations li {
+  display: flex;
+}
+
+.about-translations a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.85rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.about-translations a:hover {
+  border-color: var(--gold-warm);
+}
+
+.contact-form {
+  margin-top: 1.5rem;
+  max-width: 32rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.contact-form__field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.contact-form__field label {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.contact-form__field input,
+.contact-form__field textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+}
+
+.contact-form__field textarea {
+  resize: vertical;
+  min-height: 8rem;
+}
+
+.contact-form__status {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.blessing-generator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  gap: 0.75rem;
+}
+
+.blessing-generator__versions {
+  display: flex;
+  gap: 0.5rem;
+  width: 88%;
+  max-width: 420px;
+}
+
+.btn--primary {
+  font-size: 1.125rem;
+  padding: 1rem 1.5rem;
+  width: 100%;
+  max-width: 480px;
+}
+
+.btn--version {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  padding: 0.75rem 0.5rem;
+  background: linear-gradient(90deg, var(--gold-warm), rgba(255, 215, 0, 0.85));
+}
+
+.btn--version:active {
+  transform: scale(0.97);
+}
+
+.verse-panel {
+  display: none;
+  width: 100%;
+  max-width: 520px;
+  margin: 1.5rem 0 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 2px dashed var(--gold-warm);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.12);
+  text-align: left;
+  position: relative;
+}
+
+.verse-panel.is-visible {
+  display: block;
+}
+
+.verse-panel__text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.verse-panel__cite {
+  display: block;
+  text-align: right;
+  font-size: 0.8rem;
+  opacity: 0.85;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.verse-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.book-grid a {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  padding: 0.6rem 0.75rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.book-grid a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    var(--book-grid-flair) 50%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.book-grid a.book-grid-flair::after {
+  animation: bookGridFlair 1.2s ease-out forwards;
+}
+
+@keyframes bookGridFlair {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+.book-grid a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 0.4rem;
+  margin: 1rem 0;
+}
+
+.chapter-grid a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.chapter-grid a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.verse-list {
+  list-style: none;
+  max-width: 65ch;
+  margin: 1rem auto;
+}
+
+.verse-list li {
+  margin-bottom: 0.65rem;
+  line-height: 1.55;
+}
+
+.verse-list sup {
+  color: var(--gold-warm);
+  font-weight: 700;
+  margin-right: 0.35rem;
+}
+
+.bible-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+}
+
+.bible-nav select {
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.download-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--reader-surface);
+  border: 1px solid var(--reader-surface-border);
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.85rem;
+}
+
+.download-bar a,
+.download-bar button {
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  font: inherit;
+}
+
+.version-cards {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.version-card {
+  padding: 1.25rem;
+  background: var(--surface-elevated);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.version-card h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.version-card a {
+  margin-right: 1rem;
+}
+
+.search-box {
+  margin: 1rem 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.search-box input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-results {
+  list-style: none;
+  margin-top: 0.75rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.search-results li {
+  margin-bottom: 0.5rem;
+}
+
+.search-results a {
+  display: block;
+  padding: 0.5rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.search-results a:hover {
+  border-color: var(--accent);
+}
+
+.section-title {
+  font-size: 1rem;
+  margin: 1.25rem 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+.indexed-bible-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2rem;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin: 1.5rem 0;
+  padding: 0.75rem 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.indexed-bible-nav__link {
+  position: relative;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.25rem 0;
+}
+
+.indexed-bible-nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease-out;
+}
+
+.indexed-bible-nav__link:hover::after,
+.indexed-bible-nav__link:focus-visible::after,
+.indexed-bible-nav__link--active::after {
+  transform: scaleX(1);
+}
+
+.indexed-bible-nav__link:hover,
+.indexed-bible-nav__link--active {
+  color: var(--accent);
+}
+
+.indexed-bible-nav__link--active {
+  font-weight: 600;
+}
+
+.indexed-bible-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.bible-version-index__heading {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem;
+  scroll-margin-top: 4rem;
+}
+
+.bible-version-index {
+  scroll-margin-top: 4rem;
+}

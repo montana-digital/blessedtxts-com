@@ -14,7 +14,7 @@ export async function initSearch(
 
   let searchGeneration = 0;
 
-  const runSearch = debounce(async () => {
+  const runSearchNow = async () => {
     const q = input.value.trim();
     if (q.length < 2) {
       searchGeneration++;
@@ -30,7 +30,15 @@ export async function initSearch(
 
     if (!result.ok) {
       const li = document.createElement('li');
-      li.textContent = result.error || 'Search unavailable.';
+      li.append(result.error || 'Search unavailable.');
+      const retry = document.createElement('button');
+      retry.type = 'button';
+      retry.className = 'btn btn--small';
+      retry.textContent = 'Retry';
+      retry.addEventListener('click', () => {
+        void runSearchNow();
+      });
+      li.append(' ', retry);
       resultsEl.replaceChildren(li);
       return;
     }
@@ -53,6 +61,10 @@ export async function initSearch(
       li.appendChild(a);
       resultsEl.appendChild(li);
     }
+  };
+
+  const runSearch = debounce(() => {
+    void runSearchNow();
   }, 300);
 
   input.addEventListener('input', runSearch);
@@ -64,7 +76,7 @@ export async function initSearch(
       listEl: suggestEl,
       onSelect: (token) => {
         input.value = token;
-        runSearch();
+        void runSearchNow();
       },
     });
   }

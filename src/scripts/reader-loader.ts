@@ -1,9 +1,11 @@
-import type { ChapterData, ReaderManifest } from '../lib/reader-types';
-import { chapterAnchor, verseAnchor, parseHash } from '../lib/reader-anchors';
-import { isBookmarked } from '../lib/bookmarks';
-import { showReaderError, clearReaderStatus } from '../lib/reader-status';
-import { buildChapterTxt, buildChapterMd, triggerDownload } from '../lib/chapter-download';
-import { formatChapterHeaderLabel } from '../lib/reader-passage-nav';
+import type { ChapterData, ReaderManifest } from '@/lib/reader-types';
+import { chapterAnchor, verseAnchor, parseHash } from '@/lib/reader-anchors';
+import { isBookmarked } from '@/lib/bookmarks';
+import { showReaderError, clearReaderStatus } from '@/lib/reader-status';
+import { buildChapterTxt, buildChapterMd, triggerDownload } from '@/lib/chapter-download';
+import { formatChapterHeaderLabel } from '@/lib/reader-passage-nav';
+import { escapeHtml } from '@/lib/reader-ssr';
+import { fetchJson, withOfflinePrefix } from '@/lib/fetch-json';
 import {
   hydrationCacheKey,
   isBookLoaded,
@@ -12,7 +14,7 @@ import {
   markChapterHydrated,
   tryMarkBookLoaded,
   unmarkChapterHydrated,
-} from '../lib/reader-hydration';
+} from '@/lib/reader-hydration';
 
 const enablePdf = import.meta.env.PUBLIC_ENABLE_PDF === '1';
 
@@ -37,9 +39,7 @@ export async function fetchChapter(
 ): Promise<ChapterData> {
   const key = cacheKey(versionId, bookSlug, chapter);
   if (chapterCache.has(key)) return chapterCache.get(key)!;
-  const res = await fetch(`/bibles/${versionId}/${bookSlug}/${chapter}.json`);
-  if (!res.ok) throw new Error(`Chapter not found: ${bookSlug} ${chapter}`);
-  const data = (await res.json()) as ChapterData;
+  const data = await fetchJson<ChapterData>(`/bibles/${versionId}/${bookSlug}/${chapter}.json`);
   chapterCache.set(key, data);
   return data;
 }
@@ -53,14 +53,6 @@ function highlightQuery(text: string, query: string | null): string {
   } catch {
     return escaped;
   }
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
 }
 
 export function renderVerses(
@@ -236,7 +228,8 @@ export async function hydrateChapter(
       new CustomEvent('reader-chapter-hydrated', { detail: { bookSlug, chapter } }),
     );
   } catch {
-    body.innerHTML = `<p class="reader-error">Could not load this chapter.</p>
+    const msg = withOfflinePrefix('Could not load this chapter.');
+    body.innerHTML = `<p class="reader-error">${msg}</p>
       <button type="button" class="btn btn--small reader-retry-chapter" data-book="${bookSlug}" data-chapter="${chapter}">Retry</button>`;
     body.querySelector('.reader-retry-chapter')?.addEventListener('click', () => {
       unmarkChapterHydrated(versionId, bookSlug, chapter);

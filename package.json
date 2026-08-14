@@ -18,7 +18,11 @@
     "dev": "astro dev",
     "dev:full": "npm run prebuild && astro dev",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "vitest run",
+    "test:smoke": "node --test tests/smoke/build-artifacts.test.mjs tests/smoke/deploy-budget.test.mjs tests/smoke/seo.test.mjs",
+    "test:smoke:dist": "node --test tests/smoke/build-artifacts.test.mjs tests/smoke/deploy-budget.test.mjs tests/smoke/seo.test.mjs",
+    "test:e2e": "playwright test"
   },
   "keywords": [
     "bible",
@@ -38,8 +42,11 @@
     "@fontsource/cinzel": "^5.2.5",
     "@fontsource/cinzel-decorative": "^5.2.5",
     "@fontsource/inter": "^5.2.5",
+    "@playwright/test": "^1.62.1",
     "cross-env": "^7.0.3",
+    "jsdom": "^30.0.1",
     "sharp": "^0.34.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
   }
 }

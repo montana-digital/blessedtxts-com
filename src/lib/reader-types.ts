@@ -1,3 +1,5 @@
+import type { VersionId } from './bible-config';
+
 export interface ReaderManifestBook {
   slug: string;
   name: string;
@@ -6,7 +8,7 @@ export interface ReaderManifestBook {
 }
 
 export interface ReaderManifest {
-  versionId: string;
+  versionId: VersionId;
   routeSlug: string;
   books: ReaderManifestBook[];
 }
@@ -18,4 +20,6 @@ export interface ChapterData {
   translation: string;
   translationLabel: string;
   verses: { n: number; text: string }[];
+  testament?: string;
+  routeSlug?: string;
 }
