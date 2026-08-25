@@ -1,8 +1,9 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import DownloadBar from '@/components/DownloadBar.astro';
+import TranslationSiblings from '@/components/TranslationSiblings.astro';
 import type { VersionId } from '@/lib/bible-config';
-import { chapterPagePath, readerPassagePath } from '@/lib/passage-urls';
+import { chapterPagePath, readerPassagePath, translationDocumentHrefs } from '@/lib/passage-urls';
 import type { ReaderManifestBook } from '@/lib/reader-types';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const { versionId, routeSlug, label, book } = Astro.props;
+const siblings = translationDocumentHrefs(versionId, book.slug);
 ---
 
 <Breadcrumbs items={[
@@ -39,6 +41,8 @@ const { versionId, routeSlug, label, book } = Astro.props;
     {' · '}
     <a href={`/translations/${routeSlug}/`}>About {label}</a>
   </p>
+
+  <TranslationSiblings kind="book" items={siblings} />
 
   <DownloadBar
     versionId={versionId}

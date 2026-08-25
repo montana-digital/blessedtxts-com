@@ -34,3 +34,40 @@ export function readerPassagePath(
 export function versionRouteSlug(versionId: VersionId): string {
   return VERSIONS[versionId].routeSlug;
 }
+
+export function chapterMarkdownPath(versionId: VersionId, bookSlug: string, chapter: number): string {
+  return `/downloads/${versionId}/${bookSlug}/${chapter}.md`;
+}
+
+export function bookMarkdownPath(versionId: VersionId, bookSlug: string): string {
+  return `/downloads/${versionId}/${bookSlug}.md`;
+}
+
+export function chapterJsonAssetPath(versionId: VersionId, bookSlug: string, chapter: number): string {
+  return `/bibles/${versionId}/${bookSlug}/${chapter}.json`;
+}
+
+export interface TranslationDocumentHref {
+  versionId: VersionId;
+  routeSlug: string;
+  label: string;
+  href: string;
+  current: boolean;
+}
+
+export function translationDocumentHrefs(
+  currentVersionId: VersionId,
+  bookSlug: string,
+  chapter?: number,
+): TranslationDocumentHref[] {
+  return Object.values(VERSIONS).map((meta) => ({
+    versionId: meta.id,
+    routeSlug: meta.routeSlug,
+    label: meta.label,
+    href:
+      chapter != null
+        ? chapterPagePath(meta.routeSlug, bookSlug, chapter)
+        : bookPagePath(meta.routeSlug, bookSlug),
+    current: meta.id === currentVersionId,
+  }));
+}

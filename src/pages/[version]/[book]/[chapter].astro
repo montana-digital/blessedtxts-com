@@ -8,8 +8,12 @@ import {
   chapterPageTitle,
 } from '@/lib/document-meta';
 import { loadChapter } from '@/lib/load-chapter';
-import { chapterPagePath } from '@/lib/passage-urls';
-import { absoluteUrl, breadcrumbJsonLd, chapterJsonLd } from '@/lib/seo';
+import {
+  chapterJsonAssetPath,
+  chapterMarkdownPath,
+  chapterPagePath,
+} from '@/lib/passage-urls';
+import { absoluteFileUrl, absoluteUrl, breadcrumbJsonLd, chapterJsonLd } from '@/lib/seo';
 import { pageTitle } from '@/site.config';
 
 export function getStaticPaths() {
@@ -31,11 +35,14 @@ if (!chapter) {
 const manifest = loadVersionManifest(versionId);
 const description = chapterMetaDescription(meta.label, chapter.book, chapter.chapter);
 const pageUrl = chapterPagePath(routeSlug!, chapter.bookSlug, chapter.chapter);
+const markdownPath = chapterMarkdownPath(versionId, chapter.bookSlug, chapter.chapter);
+const jsonPath = chapterJsonAssetPath(versionId, chapter.bookSlug, chapter.chapter);
 ---
 
 <BaseLayout
   title={pageTitle(chapterPageTitle(meta.label, chapter.book, chapter.chapter))}
   description={description}
+  markdownAlternate={absoluteFileUrl(markdownPath)}
   jsonLd={[
     breadcrumbJsonLd([
       { name: 'Home', url: '/' },
@@ -50,6 +57,8 @@ const pageUrl = chapterPagePath(routeSlug!, chapter.bookSlug, chapter.chapter);
       description,
       url: absoluteUrl(pageUrl),
       translationUrl: absoluteUrl(`/translations/${routeSlug}/`),
+      markdownUrl: absoluteFileUrl(markdownPath),
+      jsonUrl: absoluteFileUrl(jsonPath),
     }),
   ]}
 >

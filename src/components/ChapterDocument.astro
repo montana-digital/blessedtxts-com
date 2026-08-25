@@ -1,8 +1,9 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import DownloadBar from '@/components/DownloadBar.astro';
+import TranslationSiblings from '@/components/TranslationSiblings.astro';
 import type { VersionId } from '@/lib/bible-config';
-import { bookPagePath, chapterPagePath, readerPassagePath } from '@/lib/passage-urls';
+import { bookPagePath, chapterPagePath, readerPassagePath, translationDocumentHrefs } from '@/lib/passage-urls';
 import { nextChapter, previousChapter } from '@/lib/chapter-nav';
 import { renderChapterVersesHtml } from '@/lib/reader-ssr';
 import type { ChapterData, ReaderManifest } from '@/lib/reader-types';
@@ -20,6 +21,7 @@ const prev = previousChapter(manifest, chapter.bookSlug, chapter.chapter);
 const next = nextChapter(manifest, chapter.bookSlug, chapter.chapter);
 const readerHref = readerPassagePath(routeSlug, chapter.bookSlug, chapter.chapter);
 const versesHtml = renderChapterVersesHtml(chapter, 'chapter');
+const siblings = translationDocumentHrefs(versionId, chapter.bookSlug, chapter.chapter);
 ---
 
 <Breadcrumbs items={[
@@ -40,6 +42,8 @@ const versesHtml = renderChapterVersesHtml(chapter, 'chapter');
     {' · '}
     <a href={`/indexed-bible/#${routeSlug}`}>Indexed Bible</a>
   </p>
+
+  <TranslationSiblings kind="chapter" items={siblings} />
 
   <DownloadBar
     versionId={versionId}

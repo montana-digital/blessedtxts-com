@@ -37,9 +37,11 @@ See [`docs/deploy.md`](deploy.md) for key setup.
 ## AI discovery
 
 - `public/llms.txt` and `public/.well-known/llms.txt` (identical)
+- `public/agents.txt`
 - `Content-Signal: search=yes, ai-input=yes, ai-train=yes` in `robots.txt`
 - CORS on `/bibles/*`, `/downloads/*`, `/api/*`
 - Verse/chapter API: `/api/v1/verse`, `/api/v1/chapter`, OpenAPI at `/api/v1/openapi.json`
+- Chapter/book HTML includes `rel="alternate" type="text/markdown"` to `/downloads/...md` (not in the sitemap)
 - Dashboard checklist: [`docs/ai-crawl-checklist.md`](ai-crawl-checklist.md)
 - Query clusters: [`docs/seo-content-map.md`](seo-content-map.md)
 

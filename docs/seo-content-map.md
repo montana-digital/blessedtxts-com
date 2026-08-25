@@ -35,6 +35,7 @@ Each topic page uses a unique lead paragraph plus King James excerpts.
 ## Agent surfaces
 
 - `/llms.txt` and `/.well-known/llms.txt` (identical)
+- `/agents.txt`
 - `/bibles/{version}/{book}/{chapter}.json` (CORS)
 - `/downloads/{version}/...` TXT and Markdown (CORS)
 - `GET /api/v1/verse` and `GET /api/v1/chapter` (OpenAPI at `/api/v1/openapi.json`)

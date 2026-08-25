@@ -1,0 +1,31 @@
+---
+interface Item {
+  label: string;
+  href: string;
+  current: boolean;
+}
+
+interface Props {
+  items: Item[];
+  kind: 'chapter' | 'book';
+}
+
+const { items, kind } = Astro.props;
+const heading = kind === 'chapter' ? 'Same chapter in' : 'Same book in';
+const ariaLabel = kind === 'chapter' ? 'Same chapter in other translations' : 'Same book in other translations';
+---
+
+<nav class="translation-siblings" aria-label={ariaLabel}>
+  <span class="translation-siblings__label">{heading}</span>
+  {' '}
+  {items.map((item, i) => (
+    <>
+      {i > 0 && <span aria-hidden="true"> · </span>}
+      {item.current ? (
+        <span aria-current="page">{item.label}</span>
+      ) : (
+        <a href={item.href}>{item.label}</a>
+      )}
+    </>
+  ))}
+</nav>

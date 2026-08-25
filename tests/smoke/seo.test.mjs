@@ -16,6 +16,8 @@ describe('SEO artifacts smoke', () => {
     assert.match(robots, /sitemap-index\.xml/i);
     assert.doesNotMatch(robots, /sitemap\.xml\s*$/m);
     assert.match(robots, /llms\.txt/i);
+    assert.match(robots, /agents\.txt/i);
+    assert.match(robots, /OAI-SearchBot/);
     assert.match(robots, /Content-Signal:\s*search=yes,\s*ai-input=yes,\s*ai-train=yes/);
   });
 
@@ -25,8 +27,16 @@ describe('SEO artifacts smoke', () => {
     assert.match(llms, /king-james-bible\/read/);
     assert.match(llms, /king-james-bible\/john\/3/);
     assert.match(llms, /api\/v1\/verse/);
+    assert.match(llms, /agents\.txt/);
     const wellKnown = fs.readFileSync(path.join(ROOT, 'public', '.well-known', 'llms.txt'), 'utf8');
     assert.equal(llms, wellKnown);
+  });
+
+  it('agents.txt points at llms.txt and OpenAPI', () => {
+    const agents = fs.readFileSync(path.join(ROOT, 'public', 'agents.txt'), 'utf8');
+    assert.match(agents, /llms\.txt/);
+    assert.match(agents, /api\/v1\/openapi\.json/);
+    assert.match(agents, /api\/v1\/verse\?ref=/);
   });
 
   it('committed stub sitemap.xml is not present', () => {
@@ -79,6 +89,10 @@ describe('SEO artifacts smoke', () => {
     assert.equal(spec.openapi.startsWith('3.'), true);
     assert.ok(spec.paths['/api/v1/verse']);
     assert.ok(spec.paths['/api/v1/chapter']);
+    assert.ok(spec.paths['/api/v1/verse'].get.responses['502']);
+    assert.ok(spec.paths['/api/v1/verse'].get.responses['405']);
+    assert.equal(spec.components.schemas.VerseSuccess.properties.url.format, 'uri');
+    assert.equal(spec.components.schemas.ChapterSuccess.properties.url.format, 'uri');
   });
 
   it('_redirects keeps version-root 301s and drops book/chapter rules', () => {
@@ -165,6 +179,10 @@ describe('SEO artifacts smoke', () => {
     assert.match(html, /id="v16"/);
     assert.match(html, /rel="canonical"/);
     assert.match(html, /"isPartOf"[\s\S]*translations\/king-james-bible/);
+    assert.match(html, /rel="alternate"[^>]*type="text\/markdown"|type="text\/markdown"[^>]*rel="alternate"/);
+    assert.match(html, /downloads\/kjv\/john\/3\.md/);
+    assert.match(html, /href="\/world-english-bible\/john\/3\/"/);
+    assert.match(html, /href="\/websters-bible\/john\/3\/"/);
     assert.doesNotMatch(html, /name="robots" content="noindex"/);
     assert.doesNotMatch(html, /location\.replace/);
   });
@@ -197,5 +215,6 @@ describe('SEO artifacts smoke', () => {
     if (!fs.existsSync(indexPath) && !fs.existsSync(fallback)) return;
     const locs = parseSitemapLocs(path.join(ROOT, 'dist'), 'blessedtxts.com');
     assert.ok(locs.length >= 3700, `expected at least 3700 sitemap URLs, got ${locs.length}`);
+    assert.ok(!locs.some((loc) => loc.endsWith('.md')), 'sitemap must not list markdown files');
   });
 });

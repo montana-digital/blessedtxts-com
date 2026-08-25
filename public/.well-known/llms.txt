@@ -79,5 +79,6 @@ Do not use version roots such as `/king-james-bible/` (they redirect). Prefer `/
 
 ## Optional
 
+- Agent discovery: https://blessedtxts.com/agents.txt
 - Sitemap: https://blessedtxts.com/sitemap-index.xml
 - GitHub: https://github.com/montana-digital/blessedtxts-com

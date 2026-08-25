@@ -1,4 +1,4 @@
-import { SITE_NAME, SITE_URL } from '@/site.config';
+import { GITHUB_REPO_URL, SITE_NAME, SITE_URL } from '@/site.config';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 export const OG_IMAGE_ALT = 'Blessed Texts — free online Bible reader and verse generator';
 export const OG_IMAGE_WIDTH = 1200;
@@ -11,6 +11,36 @@ export function absoluteUrl(pathname: string): string {
   const path = pathname.startsWith('/') ? pathname : `/${pathname}`;
   const normalized = path.endsWith('/') || path === '/' ? path : `${path}/`;
   return new URL(normalized, SITE_URL).href;
+}
+
+/** Absolute URL for a file path (.md, .json) — do not force a trailing slash. */
+export function absoluteFileUrl(pathname: string): string {
+  if (pathname.startsWith('http://') || pathname.startsWith('https://')) return pathname;
+  const path = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  return new URL(path, SITE_URL).href;
+}
+
+function mediaEncodings(opts: {
+  markdownUrl?: string;
+  jsonUrl?: string;
+}): Record<string, unknown> | Record<string, unknown>[] | undefined {
+  const encoding: Record<string, unknown>[] = [];
+  if (opts.markdownUrl) {
+    encoding.push({
+      '@type': 'MediaObject',
+      encodingFormat: 'text/markdown',
+      contentUrl: opts.markdownUrl,
+    });
+  }
+  if (opts.jsonUrl) {
+    encoding.push({
+      '@type': 'MediaObject',
+      encodingFormat: 'application/json',
+      contentUrl: opts.jsonUrl,
+    });
+  }
+  if (encoding.length === 0) return undefined;
+  return encoding.length === 1 ? encoding[0] : encoding;
 }
 
 export function webSiteJsonLd(): Record<string, unknown> {
@@ -32,6 +62,7 @@ export function organizationJsonLd(): Record<string, unknown> {
     name: SITE_NAME,
     url: SITE_URL,
     logo: `${SITE_URL}/logo.webp`,
+    sameAs: [GITHUB_REPO_URL],
   };
 }
 
@@ -54,7 +85,9 @@ export function bookJsonLd(opts: {
   name: string;
   description: string;
   url: string;
+  markdownUrl?: string;
 }): Record<string, unknown> {
+  const encoding = mediaEncodings({ markdownUrl: opts.markdownUrl });
   return {
     '@context': 'https://schema.org',
     '@type': 'Book',
@@ -64,6 +97,7 @@ export function bookJsonLd(opts: {
     inLanguage: 'en',
     license: 'https://creativecommons.org/publicdomain/mark/1.0/',
     isAccessibleForFree: true,
+    ...(encoding ? { encoding } : {}),
   };
 }
 
@@ -74,7 +108,10 @@ export function chapterJsonLd(opts: {
   description: string;
   url: string;
   translationUrl: string;
+  markdownUrl?: string;
+  jsonUrl?: string;
 }): Record<string, unknown> {
+  const encoding = mediaEncodings({ markdownUrl: opts.markdownUrl, jsonUrl: opts.jsonUrl });
   return {
     '@context': 'https://schema.org',
     '@type': 'Chapter',
@@ -89,6 +126,7 @@ export function chapterJsonLd(opts: {
       name: opts.translationName,
       url: opts.translationUrl,
     },
+    ...(encoding ? { encoding } : {}),
   };
 }
 

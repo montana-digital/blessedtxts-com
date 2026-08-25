@@ -14,9 +14,10 @@ interface Props {
   robots?: string;
   ogImage?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  markdownAlternate?: string;
 }
 
-const { title, description, canonical, wide = false, home = false, robots, ogImage, jsonLd } =
+const { title, description, canonical, wide = false, home = false, robots, ogImage, jsonLd, markdownAlternate } =
   Astro.props;
 const canonicalUrl = canonical || absoluteUrl(Astro.url.pathname);
 const mainClass = home ? 'page-main page-main--home' : wide ? 'page-main page-main--wide' : 'page-main';
@@ -35,6 +36,7 @@ const ahrefsKey = import.meta.env.PUBLIC_AHREFS_KEY;
     robots={robots}
     ogImage={ogImage}
     jsonLd={jsonLd}
+    markdownAlternate={markdownAlternate}
   />
   {enableAhrefs && ahrefsKey && (
     <script

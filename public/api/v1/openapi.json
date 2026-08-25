@@ -3,7 +3,7 @@
   "info": {
     "title": "Blessed Texts Scripture API",
     "version": "1.0.0",
-    "description": "Public-domain verse and chapter lookup for King James, World English, and Webster Bibles. No authentication."
+    "description": "Public-domain verse and chapter lookup for King James, World English, and Webster Bibles. No authentication. Successful responses include an absolute citation url from the request origin."
   },
   "servers": [{ "url": "https://blessedtxts.com" }],
   "paths": {
@@ -25,9 +25,24 @@
           }
         ],
         "responses": {
-          "200": { "description": "Verse found" },
-          "400": { "description": "Invalid ref or version" },
-          "404": { "description": "Verse not found" }
+          "200": {
+            "description": "Verse found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/VerseSuccess" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "405": { "$ref": "#/components/responses/MethodNotAllowed" },
+          "502": { "$ref": "#/components/responses/Upstream" }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "204": { "description": "No content" }
         }
       }
     },
@@ -55,9 +70,122 @@
           }
         ],
         "responses": {
-          "200": { "description": "Chapter found" },
-          "400": { "description": "Invalid parameters" },
-          "404": { "description": "Chapter not found" }
+          "200": {
+            "description": "Chapter found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChapterSuccess" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "405": { "$ref": "#/components/responses/MethodNotAllowed" },
+          "502": { "$ref": "#/components/responses/Upstream" }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "204": { "description": "No content" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "required": ["error", "message"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": ["bad_request", "not_found", "method_not_allowed", "upstream"]
+          },
+          "message": { "type": "string" }
+        }
+      },
+      "VerseSuccess": {
+        "type": "object",
+        "required": ["ref", "version", "text", "url", "license", "citation"],
+        "properties": {
+          "ref": { "type": "string", "example": "John 3:16" },
+          "version": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "example": "kjv" },
+              "label": { "type": "string", "example": "King James Bible" }
+            }
+          },
+          "text": { "type": "string" },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Absolute chapter citation URL with verse hash",
+            "example": "https://blessedtxts.com/king-james-bible/john/3/#v16"
+          },
+          "license": { "type": "string", "format": "uri" },
+          "citation": { "type": "string" }
+        }
+      },
+      "ChapterSuccess": {
+        "type": "object",
+        "required": ["ref", "version", "book", "bookSlug", "chapter", "verses", "url", "license"],
+        "properties": {
+          "ref": { "type": "string", "example": "John 3" },
+          "version": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" }
+            }
+          },
+          "book": { "type": "string" },
+          "bookSlug": { "type": "string" },
+          "chapter": { "type": "integer" },
+          "verses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "n": { "type": "integer" },
+                "text": { "type": "string" }
+              }
+            }
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Absolute chapter page URL",
+            "example": "https://blessedtxts.com/king-james-bible/john/3/"
+          },
+          "license": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Invalid ref, book, chapter, or version",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+        }
+      },
+      "NotFound": {
+        "description": "Verse or chapter not found",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+        }
+      },
+      "MethodNotAllowed": {
+        "description": "Use GET or OPTIONS",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+        }
+      },
+      "Upstream": {
+        "description": "Chapter JSON missing or unreadable",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
         }
       }
     }

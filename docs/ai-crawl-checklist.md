@@ -26,6 +26,7 @@ curl -sI https://blessedtxts.com/robots.txt
 curl -s https://blessedtxts.com/robots.txt
 curl -sI https://blessedtxts.com/llms.txt
 curl -sI https://blessedtxts.com/.well-known/llms.txt
+curl -sI https://blessedtxts.com/agents.txt
 curl -sI https://blessedtxts.com/sitemap-index.xml
 curl -s https://blessedtxts.com/king-james-bible/john/3/ | findstr /i "For God so loved"
 curl -sI "https://blessedtxts.com/api/v1/verse?ref=John+3:16&version=kjv"

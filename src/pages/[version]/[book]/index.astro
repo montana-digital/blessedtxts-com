@@ -5,8 +5,8 @@ import { VERSIONS, routeSlugToId } from '@/lib/bible-config';
 import { loadVersionManifest, getAllBookPaths } from '@/lib/content';
 import { findManifestBook } from '@/lib/chapter-nav';
 import { bookMetaDescription, bookNameFromSlug, bookPageTitle } from '@/lib/document-meta';
-import { bookPagePath } from '@/lib/passage-urls';
-import { absoluteUrl, bookJsonLd, breadcrumbJsonLd } from '@/lib/seo';
+import { bookMarkdownPath, bookPagePath } from '@/lib/passage-urls';
+import { absoluteFileUrl, absoluteUrl, bookJsonLd, breadcrumbJsonLd } from '@/lib/seo';
 import { pageTitle } from '@/site.config';
 
 export function getStaticPaths() {
@@ -24,11 +24,13 @@ if (!book) throw new Error(`Unknown book ${bookSlug} for ${versionId}`);
 const bookName = book.name || bookNameFromSlug(book.slug);
 const description = bookMetaDescription(meta.label, bookName);
 const pageUrl = bookPagePath(routeSlug!, book.slug);
+const markdownPath = bookMarkdownPath(versionId, book.slug);
 ---
 
 <BaseLayout
   title={pageTitle(bookPageTitle(meta.label, bookName))}
   description={description}
+  markdownAlternate={absoluteFileUrl(markdownPath)}
   jsonLd={[
     breadcrumbJsonLd([
       { name: 'Home', url: '/' },
@@ -39,6 +41,7 @@ const pageUrl = bookPagePath(routeSlug!, book.slug);
       name: `${bookName} (${meta.label})`,
       description,
       url: absoluteUrl(pageUrl),
+      markdownUrl: absoluteFileUrl(markdownPath),
     }),
   ]}
 >

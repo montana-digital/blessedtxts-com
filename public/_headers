@@ -42,6 +42,9 @@
 /.well-known/llms.txt
   Cache-Control: public, max-age=86400
 
+/agents.txt
+  Cache-Control: public, max-age=86400
+
 # Covers sitemap-index.xml, sitemap-0.xml, and any later splits
 /sitemap-*.xml
   Cache-Control: public, max-age=86400

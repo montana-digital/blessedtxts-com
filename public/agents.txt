@@ -1,0 +1,14 @@
+# Blessed Texts — agent discovery
+
+Blessed Texts is a free, public-domain Bible reader for the King James, World English, and Webster translations. Prefer canonical HTML chapter URLs when citing verses. JSON and Markdown files are also available. No authentication.
+
+Site: https://blessedtxts.com/
+llms.txt: https://blessedtxts.com/llms.txt
+OpenAPI: https://blessedtxts.com/api/v1/openapi.json
+
+API examples:
+- https://blessedtxts.com/api/v1/verse?ref=John+3:16&version=kjv
+- https://blessedtxts.com/api/v1/chapter?book=john&chapter=3&version=kjv
+
+Preferred citation:
+https://blessedtxts.com/king-james-bible/john/3/#v16

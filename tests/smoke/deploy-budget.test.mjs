@@ -62,6 +62,7 @@ describe('deploy budget smoke', () => {
     const html = fs.readFileSync(htmlPath, 'utf8');
     assert.match(html, /\/downloads\/kjv\/genesis\/1\.txt/);
     assert.match(html, /\/downloads\/kjv\/genesis\/1\.md/);
+    assert.match(html, /rel="alternate"[^>]*type="text\/markdown"|type="text\/markdown"[^>]*rel="alternate"/);
   });
 
   it('chapter document has verse text and no JS redirect', () => {
