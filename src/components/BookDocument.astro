@@ -1,0 +1,56 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import DownloadBar from '@/components/DownloadBar.astro';
+import type { VersionId } from '@/lib/bible-config';
+import { chapterPagePath, readerPassagePath } from '@/lib/passage-urls';
+import type { ReaderManifestBook } from '@/lib/reader-types';
+
+interface Props {
+  versionId: VersionId;
+  routeSlug: string;
+  label: string;
+  book: ReaderManifestBook;
+}
+
+const { versionId, routeSlug, label, book } = Astro.props;
+---
+
+<Breadcrumbs items={[
+  { label: 'Home', href: '/' },
+  { label, href: `/translations/${routeSlug}/` },
+  { label: book.name },
+]} />
+
+<article class="book-document">
+  <h1>{book.name}</h1>
+  <p class="subtitle">{label} — {book.chapters.length} chapters</p>
+
+  <p>
+    Read every chapter of {book.name} in the {label} as a static page, or open the book in the
+    full searchable reader.
+  </p>
+
+  <p class="reader-cta">
+    <a class="btn" href={readerPassagePath(routeSlug, book.slug, book.chapters[0] ?? 1)}>
+      Open {book.name} in full reader
+    </a>
+    {' '}
+    <a href={`/indexed-bible/#${routeSlug}`}>Indexed Bible</a>
+    {' · '}
+    <a href={`/translations/${routeSlug}/`}>About {label}</a>
+  </p>
+
+  <DownloadBar
+    versionId={versionId}
+    label={label}
+    scopeLabel={`Full ${book.name}`}
+    bookSlug={book.slug}
+  />
+
+  <h2>Chapters</h2>
+  <div class="chapter-grid">
+    {book.chapters.map((n) => (
+      <a href={chapterPagePath(routeSlug, book.slug, n)}>{n}</a>
+    ))}
+  </div>
+</article>

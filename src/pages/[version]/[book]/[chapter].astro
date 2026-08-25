@@ -1,25 +1,63 @@
 ---
-import RedirectLayout from '@/layouts/RedirectLayout.astro';
-import { getAllChapterPaths } from '@/lib/content';
-import { absoluteUrl } from '@/lib/seo';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ChapterDocument from '@/components/ChapterDocument.astro';
+import { VERSIONS, routeSlugToId } from '@/lib/bible-config';
+import { getAllChapterPaths, loadVersionManifest } from '@/lib/content';
+import {
+  chapterMetaDescription,
+  chapterPageTitle,
+} from '@/lib/document-meta';
+import { loadChapter } from '@/lib/load-chapter';
+import { chapterPagePath } from '@/lib/passage-urls';
+import { absoluteUrl, breadcrumbJsonLd, chapterJsonLd } from '@/lib/seo';
+import { pageTitle } from '@/site.config';
 
 export function getStaticPaths() {
   return getAllChapterPaths();
 }
 
 const { version: routeSlug, book: bookSlug, chapter: chapterStr } = Astro.params;
-const href = `/${routeSlug}/read/#${bookSlug}-${chapterStr}`;
+const versionId = routeSlugToId(routeSlug!);
+if (!versionId) throw new Error(`Unknown version: ${routeSlug}`);
+const chapterNum = Number.parseInt(chapterStr!, 10);
+if (!Number.isFinite(chapterNum)) throw new Error(`Invalid chapter: ${chapterStr}`);
+
+const meta = VERSIONS[versionId];
+const chapter = loadChapter(process.cwd(), versionId, bookSlug!, chapterNum);
+if (!chapter) {
+  throw new Error(`Missing chapter JSON: ${versionId}/${bookSlug}/${chapterNum}`);
+}
+
+const manifest = loadVersionManifest(versionId);
+const description = chapterMetaDescription(meta.label, chapter.book, chapter.chapter);
+const pageUrl = chapterPagePath(routeSlug!, chapter.bookSlug, chapter.chapter);
 ---
 
-<RedirectLayout
-  canonical={absoluteUrl(`/${routeSlug}/read/`)}
-  message="Redirecting to the Bible reader…"
-  href={href}
+<BaseLayout
+  title={pageTitle(chapterPageTitle(meta.label, chapter.book, chapter.chapter))}
+  description={description}
+  jsonLd={[
+    breadcrumbJsonLd([
+      { name: 'Home', url: '/' },
+      { name: meta.label, url: `/translations/${routeSlug}/` },
+      { name: chapter.book, url: `/${routeSlug}/${chapter.bookSlug}/` },
+      { name: `Chapter ${chapter.chapter}` },
+    ]),
+    chapterJsonLd({
+      bookName: chapter.book,
+      chapter: chapter.chapter,
+      translationName: meta.label,
+      description,
+      url: absoluteUrl(pageUrl),
+      translationUrl: absoluteUrl(`/translations/${routeSlug}/`),
+    }),
+  ]}
 >
-  <script slot="script" is:inline define:vars={{ routeSlug, bookSlug, chapterStr }}>
-    const v = location.hash.match(/^#v(\d+)$/);
-    const suffix = v ? `-v${v[1]}` : '';
-    const target = `/${routeSlug}/read/#${bookSlug}-${chapterStr}${suffix}`;
-    location.replace(target);
-  </script>
-</RedirectLayout>
+  <ChapterDocument
+    versionId={versionId}
+    routeSlug={routeSlug!}
+    label={meta.label}
+    chapter={chapter}
+    manifest={manifest}
+  />
+</BaseLayout>

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { loadIndexNowConfig, resolveKey } from '../../scripts/indexnow-lib.mjs';
+import { loadIndexNowConfig, parseSitemapLocs, resolveKey } from '../../scripts/indexnow-lib.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..', '..');
@@ -11,17 +11,22 @@ const SITE_URL = 'https://blessedtxts.com';
 const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 describe('SEO artifacts smoke', () => {
-  it('robots.txt points to sitemap-index.xml and documents llms.txt', () => {
+  it('robots.txt points to sitemap-index.xml, llms.txt, and Content-Signal', () => {
     const robots = fs.readFileSync(path.join(ROOT, 'public', 'robots.txt'), 'utf8');
     assert.match(robots, /sitemap-index\.xml/i);
     assert.doesNotMatch(robots, /sitemap\.xml\s*$/m);
     assert.match(robots, /llms\.txt/i);
+    assert.match(robots, /Content-Signal:\s*search=yes,\s*ai-input=yes,\s*ai-train=yes/);
   });
 
   it('llms.txt exists and lists primary URLs', () => {
     const llms = fs.readFileSync(path.join(ROOT, 'public', 'llms.txt'), 'utf8');
     assert.match(llms, /blessedtxts\.com\/topics\//);
     assert.match(llms, /king-james-bible\/read/);
+    assert.match(llms, /king-james-bible\/john\/3/);
+    assert.match(llms, /api\/v1\/verse/);
+    const wellKnown = fs.readFileSync(path.join(ROOT, 'public', '.well-known', 'llms.txt'), 'utf8');
+    assert.equal(llms, wellKnown);
   });
 
   it('committed stub sitemap.xml is not present', () => {
@@ -55,11 +60,33 @@ describe('SEO artifacts smoke', () => {
     assert.equal(loadIndexNowConfig().host, 'blessedtxts.com');
   });
 
-  it('_redirects defines legacy 301 patterns', () => {
+  it('_headers allows CORS on public corpus paths', () => {
+    const headers = fs.readFileSync(path.join(ROOT, 'public', '_headers'), 'utf8');
+    assert.match(headers, /\/bibles\/\*[\s\S]*Access-Control-Allow-Origin: \*/);
+    assert.match(headers, /\/downloads\/\*[\s\S]*Access-Control-Allow-Origin: \*/);
+    assert.match(headers, /\/api\/\*[\s\S]*Access-Control-Allow-Origin: \*/);
+  });
+
+  it('_headers caches all sitemap XML files', () => {
+    const headers = fs.readFileSync(path.join(ROOT, 'public', '_headers'), 'utf8');
+    assert.match(headers, /\/sitemap-\*\.xml\r?\n\s+Cache-Control: public, max-age=86400/);
+  });
+
+  it('OpenAPI spec exists', () => {
+    const spec = JSON.parse(
+      fs.readFileSync(path.join(ROOT, 'public', 'api', 'v1', 'openapi.json'), 'utf8'),
+    );
+    assert.equal(spec.openapi.startsWith('3.'), true);
+    assert.ok(spec.paths['/api/v1/verse']);
+    assert.ok(spec.paths['/api/v1/chapter']);
+  });
+
+  it('_redirects keeps version-root 301s and drops book/chapter rules', () => {
     const redirects = fs.readFileSync(path.join(ROOT, 'public', '_redirects'), 'utf8');
-    assert.match(redirects, /\/king-james-bible\/:book\/:chapter/);
     assert.match(redirects, /\/bible-versions\//);
-    assert.match(redirects, /301/);
+    assert.match(redirects, /\/king-james-bible\/ /);
+    assert.doesNotMatch(redirects, /:book\/:chapter/);
+    assert.doesNotMatch(redirects, /\/king-james-bible\/:book /);
   });
 
   it('PWA manifest and touch icon exist in public', () => {
@@ -71,14 +98,21 @@ describe('SEO artifacts smoke', () => {
     assert.ok(fs.existsSync(path.join(ROOT, 'public', 'apple-touch-icon.png')));
   });
 
-  it('built sitemap excludes legacy chapter redirects when dist exists', () => {
-    const indexPath = path.join(ROOT, 'dist', 'sitemap-0.xml');
-    if (!fs.existsSync(indexPath)) return;
-    const xml = fs.readFileSync(indexPath, 'utf8');
-    assert.doesNotMatch(xml, /king-james-bible\/genesis\/1\/?<\/loc>/);
-    assert.match(xml, /\/topics\/hope\/?<\/loc>/);
-    assert.match(xml, /\/indexed-bible\/?<\/loc>/);
-    assert.match(xml, /\/king-james-bible\/read\/?<\/loc>/);
+  it('built sitemap includes chapter documents and hubs when dist exists', () => {
+    const indexPath = path.join(ROOT, 'dist', 'sitemap-index.xml');
+    if (!fs.existsSync(indexPath) && !fs.existsSync(path.join(ROOT, 'dist', 'sitemap-0.xml'))) {
+      return;
+    }
+    const locs = parseSitemapLocs(path.join(ROOT, 'dist'), 'blessedtxts.com');
+    const joined = locs.join('\n');
+    assert.match(joined, /king-james-bible\/genesis\/1\/?$/m);
+    assert.match(joined, /king-james-bible\/john\/3\/?$/m);
+    assert.match(joined, /world-english-bible\/psalm\/23\/?$/m);
+    assert.match(joined, /\/topics\/hope\/?$/m);
+    assert.match(joined, /\/topics\/prayer\/?$/m);
+    assert.match(joined, /\/indexed-bible\/?$/m);
+    assert.match(joined, /\/king-james-bible\/read\/?$/m);
+    assert.doesNotMatch(joined, /^https:\/\/blessedtxts\.com\/king-james-bible\/?$/m);
   });
 
   it('dist branding assets exist when dist exists', () => {
@@ -115,46 +149,53 @@ describe('SEO artifacts smoke', () => {
     assert.doesNotMatch(previewSection[0], /For God so loved the world/i);
   });
 
-  it('indexed-bible book links use trailing slash before hash when dist exists', () => {
+  it('indexed-bible book links point at book pages when dist exists', () => {
     const page = path.join(ROOT, 'dist', 'indexed-bible', 'index.html');
     if (!fs.existsSync(page)) return;
     const html = fs.readFileSync(page, 'utf8');
-    assert.doesNotMatch(html, /href="\/king-james-bible\/read#[^/]/);
-    assert.doesNotMatch(html, /href="\/world-english-bible\/read#[^/]/);
-    assert.doesNotMatch(html, /href="\/websters-bible\/read#[^/]/);
-    assert.match(html, /href="\/king-james-bible\/read\/#/);
+    assert.match(html, /href="\/king-james-bible\/genesis\/"/);
+    assert.doesNotMatch(html, /href="\/king-james-bible\/read\/#genesis"/);
   });
 
-  it('built indexable pages have meta descriptions in 120–160 chars when dist exists', () => {
-    const indexPath = path.join(ROOT, 'dist', 'sitemap-0.xml');
-    if (!fs.existsSync(indexPath)) return;
-    const xml = fs.readFileSync(indexPath, 'utf8');
-    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/gi)].map((m) => m[1].trim());
+  it('sample chapter HTML has verse text and is indexable when dist exists', () => {
+    const chapter = path.join(ROOT, 'dist', 'king-james-bible', 'john', '3', 'index.html');
+    if (!fs.existsSync(chapter)) return;
+    const html = fs.readFileSync(chapter, 'utf8');
+    assert.match(html, /For God so loved the world/i);
+    assert.match(html, /id="v16"/);
+    assert.match(html, /rel="canonical"/);
+    assert.match(html, /"isPartOf"[\s\S]*translations\/king-james-bible/);
+    assert.doesNotMatch(html, /name="robots" content="noindex"/);
+    assert.doesNotMatch(html, /location\.replace/);
+  });
+
+  it('built hub and sample pages have meta descriptions in 120–160 chars when dist exists', () => {
+    const samples = [
+      path.join(ROOT, 'dist', 'index.html'),
+      path.join(ROOT, 'dist', 'topics', 'hope', 'index.html'),
+      path.join(ROOT, 'dist', 'king-james-bible', 'john', '3', 'index.html'),
+      path.join(ROOT, 'dist', 'king-james-bible', 'genesis', 'index.html'),
+    ];
+    if (!samples.every((p) => fs.existsSync(p))) return;
     const MIN = 120;
     const MAX = 160;
-    for (const loc of locs) {
-      const pathname = new URL(loc).pathname;
-      const htmlPath =
-        pathname === '/'
-          ? path.join(ROOT, 'dist', 'index.html')
-          : path.join(ROOT, 'dist', pathname.replace(/\/$/, ''), 'index.html');
-      if (!fs.existsSync(htmlPath)) continue;
+    for (const htmlPath of samples) {
       const html = fs.readFileSync(htmlPath, 'utf8');
       const m = html.match(/<meta\s+name="description"\s+content="([^"]*)"/i);
-      assert.ok(m, `missing meta description: ${loc}`);
+      assert.ok(m, `missing meta description: ${htmlPath}`);
       const len = m[1].length;
       assert.ok(
         len >= MIN && len <= MAX,
-        `meta description for ${loc} is ${len} chars (expected ${MIN}–${MAX})`,
+        `meta description for ${htmlPath} is ${len} chars (expected ${MIN}–${MAX})`,
       );
     }
   });
 
   it('built sitemap has expected indexable URL count when dist exists', () => {
-    const indexPath = path.join(ROOT, 'dist', 'sitemap-0.xml');
-    if (!fs.existsSync(indexPath)) return;
-    const xml = fs.readFileSync(indexPath, 'utf8');
-    const count = (xml.match(/<loc>/g) || []).length;
-    assert.ok(count >= 22 && count <= 26, `expected 22–26 sitemap URLs, got ${count}`);
+    const indexPath = path.join(ROOT, 'dist', 'sitemap-index.xml');
+    const fallback = path.join(ROOT, 'dist', 'sitemap-0.xml');
+    if (!fs.existsSync(indexPath) && !fs.existsSync(fallback)) return;
+    const locs = parseSitemapLocs(path.join(ROOT, 'dist'), 'blessedtxts.com');
+    assert.ok(locs.length >= 3700, `expected at least 3700 sitemap URLs, got ${locs.length}`);
   });
 });

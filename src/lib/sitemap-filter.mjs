@@ -16,12 +16,15 @@ export function shouldIncludeInSitemap(pageUrl) {
   const versionPrefix = new RegExp(`^\\/(${VERSION_SLUGS})(\\/|$)`);
   if (!versionPrefix.test(pathname)) return true;
 
-  // Reader pages must stay indexable (do not match the book-segment deny rules).
+  // Reader pages stay indexable.
   if (new RegExp(`^\\/(${VERSION_SLUGS})\\/read\\/?$`).test(pathname)) return true;
 
+  // Version roots remain noindex redirects to Indexed Bible.
   if (new RegExp(`^\\/(${VERSION_SLUGS})\\/?$`).test(pathname)) return false;
-  if (new RegExp(`^\\/(${VERSION_SLUGS})\\/[^/]+\\/\\d+\\/?$`).test(pathname)) return false;
-  if (new RegExp(`^\\/(${VERSION_SLUGS})\\/[^/]+\\/?$`).test(pathname)) return false;
+
+  // Book and chapter HTML documents are indexable.
+  if (new RegExp(`^\\/(${VERSION_SLUGS})\\/[^/]+\\/\\d+\\/?$`).test(pathname)) return true;
+  if (new RegExp(`^\\/(${VERSION_SLUGS})\\/[^/]+\\/?$`).test(pathname)) return true;
 
   return true;
 }

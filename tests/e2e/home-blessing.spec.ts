@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 test.describe('home blessing generator', () => {
   test('generates a random verse from the default pool', async ({ page }) => {
     await page.goto('/');
+    await expect(page.locator('.home-intro')).toBeVisible();
+    await expect(page.locator('.home-intro a[href="/indexed-bible/"]')).toBeVisible();
     await page.locator('#btn-all').click();
 
     const panel = page.locator('#verse-panel');
@@ -40,7 +42,10 @@ test.describe('home blessing generator', () => {
   test('download button creates a txt file', async ({ page }) => {
     await page.goto('/');
     await page.locator('#btn-all').click();
+    await expect(page.locator('#verse-panel')).toBeVisible({ timeout: 20_000 });
     await expect(page.locator('#verse-text')).not.toBeEmpty();
+    await expect(page.locator('#verse-cite')).not.toBeEmpty();
+    await expect(page.locator('#btn-download')).toBeVisible();
 
     const downloadPromise = page.waitForEvent('download');
     await page.locator('#btn-download').click();

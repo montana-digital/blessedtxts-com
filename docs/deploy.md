@@ -51,9 +51,9 @@ npm run build:full
 
 Set `PUBLIC_ENABLE_PDF=1` to show PDF download links in the UI.
 
-## Legacy URL redirects
+## URL redirects
 
-`public/_redirects` sends old book/chapter/version paths to the reader or Indexed Bible with HTTP 301. Astro redirect stub pages remain as `noindex` fallbacks.
+`public/_redirects` 301s version roots (`/king-james-bible/` → Indexed Bible) and `/bible-versions/` → About. Book and chapter paths are **static HTML**, not redirects.
 
 ## Performance notes
 
@@ -70,15 +70,17 @@ After the custom domain is live:
 - [ ] `https://blessedtxts.com/og-image.jpg` returns 1200×630 image
 - [ ] `https://blessedtxts.com/favicon.ico` and `/apple-touch-icon.png` load
 - [ ] View-source on `/topics/hope/` shows verse text in HTML
+- [ ] View-source on `/king-james-bible/john/3/` shows “For God so loved the world”
 - [ ] View-source on `/king-james-bible/read/` shows popular passages in `<noscript>`
-- [ ] `https://blessedtxts.com/king-james-bible/genesis/1/` redirects to reader (301 or JS fallback)
+- [ ] `https://blessedtxts.com/king-james-bible/` redirects to Indexed Bible
+- [ ] AI crawl checklist: [docs/ai-crawl-checklist.md](ai-crawl-checklist.md)
 - [ ] Google Search Console — add property, submit sitemap
 - [ ] [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) — homepage OG preview
 - [ ] [Twitter Card Validator](https://cards-dev.twitter.com/validator) — `summary_large_image`
 - [ ] View-source on `/` shows Ahrefs analytics script in `<head>` (requires `PUBLIC_ENABLE_AHREFS=1` and `PUBLIC_AHREFS_KEY` on Production)
 - [ ] Ahrefs Web Analytics → **Recheck installation** succeeds
 - [ ] `https://blessedtxts.com/{indexnow-key}.txt` returns the key (after setting `indexnow.config.json` + `INDEXNOW_KEY`)
-- [ ] Cloudflare production build log shows `[indexnow] success (200)` or `(202)` when IndexNow is enabled
+- [ ] Cloudflare production build log shows `[indexnow] success` or a non-fatal `[indexnow] failed after retries` warning when IndexNow is enabled
 
 ## Local verification before deploy
 

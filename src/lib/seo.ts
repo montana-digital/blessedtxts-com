@@ -66,3 +66,43 @@ export function bookJsonLd(opts: {
     isAccessibleForFree: true,
   };
 }
+
+export function chapterJsonLd(opts: {
+  bookName: string;
+  chapter: number;
+  translationName: string;
+  description: string;
+  url: string;
+  translationUrl: string;
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Chapter',
+    name: `${opts.bookName} ${opts.chapter}`,
+    description: opts.description,
+    url: opts.url,
+    inLanguage: 'en',
+    license: 'https://creativecommons.org/publicdomain/mark/1.0/',
+    isAccessibleForFree: true,
+    isPartOf: {
+      '@type': 'Book',
+      name: opts.translationName,
+      url: opts.translationUrl,
+    },
+  };
+}
+
+export function faqPageJsonLd(faqs: { question: string; answer: string }[]): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+}

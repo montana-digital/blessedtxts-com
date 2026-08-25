@@ -1,0 +1,65 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Blessed Texts Scripture API",
+    "version": "1.0.0",
+    "description": "Public-domain verse and chapter lookup for King James, World English, and Webster Bibles. No authentication."
+  },
+  "servers": [{ "url": "https://blessedtxts.com" }],
+  "paths": {
+    "/api/v1/verse": {
+      "get": {
+        "summary": "Look up a single verse",
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "John 3:16" }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "default": "kjv", "example": "kjv" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Verse found" },
+          "400": { "description": "Invalid ref or version" },
+          "404": { "description": "Verse not found" }
+        }
+      }
+    },
+    "/api/v1/chapter": {
+      "get": {
+        "summary": "Look up a chapter",
+        "parameters": [
+          {
+            "name": "book",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "john" }
+          },
+          {
+            "name": "chapter",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "example": 3 }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "default": "kjv" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Chapter found" },
+          "400": { "description": "Invalid parameters" },
+          "404": { "description": "Chapter not found" }
+        }
+      }
+    }
+  }
+}

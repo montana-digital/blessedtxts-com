@@ -2,6 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { VERSIONS } from '../lib/bible-config';
 import { pageTitle } from '../site.config';
+
+const READER_BY_SLUG: Record<string, { href: string; label: string }> = Object.fromEntries(
+  Object.values(VERSIONS).map((v) => [
+    v.routeSlug,
+    { href: `/${v.routeSlug}/read/`, label: `Read ${v.label}` },
+  ]),
+);
+const defaultReader = READER_BY_SLUG[VERSIONS.kjv.routeSlug] ?? {
+  href: `/${VERSIONS.kjv.routeSlug}/read/`,
+  label: `Read ${VERSIONS.kjv.label}`,
+};
 ---
 
 <BaseLayout
@@ -11,12 +22,31 @@ import { pageTitle } from '../site.config';
 >
   <h1>Page not found</h1>
   <p class="subtitle">We could not find that page on Blessed Texts.</p>
+  <p>
+    If you were looking for a book or chapter, browse the
+    <a href="/indexed-bible/">Indexed Bible</a>
+    for every translation we host, or open a translation reader.
+  </p>
   <ul class="about-translations">
     <li><a href="/">Home</a></li>
     <li><a href="/indexed-bible/">Indexed Bible</a></li>
-    <li><a href={`/${VERSIONS.kjv.routeSlug}/read/`}>Read King James Bible</a></li>
+    <li>
+      <a id="bible-404-reader" href={defaultReader.href}>{defaultReader.label}</a>
+    </li>
     <li><a href="/topics/">Bible topics</a></li>
     <li><a href="/about/">About</a></li>
     <li><a href="/contact/">Contact</a></li>
   </ul>
 </BaseLayout>
+
+<script is:inline define:vars={{ READER_BY_SLUG }}>
+  try {
+    const slug = location.pathname.split('/').filter(Boolean)[0];
+    const match = slug ? READER_BY_SLUG[slug] : null;
+    const link = document.getElementById('bible-404-reader');
+    if (match && link) {
+      link.setAttribute('href', match.href);
+      link.textContent = match.label;
+    }
+  } catch (_) {}
+</script>

@@ -18,3 +18,31 @@ fear:
   keywords: [fear, afraid, dismayed, tremble]
 joy:
   keywords: [joy, rejoice, glad, gladness]
+prayer:
+  keywords: [pray, prayer, praying, supplication, ask]
+anxiety:
+  keywords: [careful, anxious, worry, troubled, afraid]
+healing:
+  keywords: [heal, healing, health, disease, infirmity]
+salvation:
+  keywords: [salvation, saved, saviour, redeem, everlasting]
+children:
+  keywords: [child, children, son, daughter, youth]
+marriage:
+  keywords: [wife, husband, marry, marriage, wedlock]
+money:
+  keywords: [money, rich, treasure, poor, give]
+patience:
+  keywords: [patience, patient, wait, endure, longsuffering]
+humility:
+  keywords: [humble, humility, lowly, meek, pride]
+thanksgiving:
+  keywords: [thanks, thanksgiving, thankful, praise, grateful]
+sorrow:
+  keywords: [sorrow, weep, mourning, tears, grief]
+anger:
+  keywords: [anger, wrath, angry, slow, strife]
+guidance:
+  keywords: [guide, lead, path, way, counsel]
+protection:
+  keywords: [protect, refuge, shield, fortress, defence]

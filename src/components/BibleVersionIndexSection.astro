@@ -3,13 +3,10 @@ import BibleSearch from './BibleSearch.astro';
 import DownloadBar from './DownloadBar.astro';
 import {
   VERSIONS,
-  OT_BOOKS,
-  NT_BOOKS,
-  bookToSlug,
-  slugToBook,
   type VersionId,
 } from '../lib/bible-config';
-import { listBooks } from '../lib/content';
+import { loadVersionManifest } from '../lib/content';
+import { bookPagePath } from '../lib/passage-urls';
 
 interface Props {
   versionId: VersionId;
@@ -19,9 +16,9 @@ interface Props {
 const { versionId, sectionId } = Astro.props;
 const meta = VERSIONS[versionId];
 const routeSlug = meta.routeSlug;
-const bookSlugs = listBooks(versionId);
-const otSlugs = OT_BOOKS.map(bookToSlug).filter((s) => bookSlugs.includes(s));
-const ntSlugs = NT_BOOKS.map(bookToSlug).filter((s) => bookSlugs.includes(s));
+const manifest = loadVersionManifest(versionId);
+const otBooks = manifest.books.filter((book) => book.testament === 'ot');
+const ntBooks = manifest.books.filter((book) => book.testament === 'nt');
 ---
 
 <section class="bible-version-index" aria-labelledby={sectionId}>
@@ -39,15 +36,15 @@ const ntSlugs = NT_BOOKS.map(bookToSlug).filter((s) => bookSlugs.includes(s));
 
   <h3 class="section-title">Old Testament</h3>
   <div class="book-grid">
-    {otSlugs.map((slug) => (
-      <a href={`/${routeSlug}/read/#${slug}`}>{slugToBook(slug)}</a>
+    {otBooks.map((book) => (
+      <a href={bookPagePath(routeSlug, book.slug)}>{book.name}</a>
     ))}
   </div>
 
   <h3 class="section-title">New Testament</h3>
   <div class="book-grid">
-    {ntSlugs.map((slug) => (
-      <a href={`/${routeSlug}/read/#${slug}`}>{slugToBook(slug)}</a>
+    {ntBooks.map((book) => (
+      <a href={bookPagePath(routeSlug, book.slug)}>{book.name}</a>
     ))}
   </div>
 </section>

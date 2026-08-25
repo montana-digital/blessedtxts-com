@@ -1,18 +1,51 @@
 ---
-import RedirectLayout from '@/layouts/RedirectLayout.astro';
-import { getAllBookPaths } from '@/lib/content';
-import { absoluteUrl } from '@/lib/seo';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BookDocument from '@/components/BookDocument.astro';
+import { VERSIONS, routeSlugToId } from '@/lib/bible-config';
+import { loadVersionManifest, getAllBookPaths } from '@/lib/content';
+import { findManifestBook } from '@/lib/chapter-nav';
+import { bookMetaDescription, bookNameFromSlug, bookPageTitle } from '@/lib/document-meta';
+import { bookPagePath } from '@/lib/passage-urls';
+import { absoluteUrl, bookJsonLd, breadcrumbJsonLd } from '@/lib/seo';
+import { pageTitle } from '@/site.config';
 
 export function getStaticPaths() {
   return getAllBookPaths();
 }
 
 const { version: routeSlug, book: bookSlug } = Astro.params;
-const href = `/${routeSlug}/read/#${bookSlug}-1`;
+const versionId = routeSlugToId(routeSlug!);
+if (!versionId) throw new Error(`Unknown version: ${routeSlug}`);
+const meta = VERSIONS[versionId];
+const manifest = loadVersionManifest(versionId);
+const book = findManifestBook(manifest, bookSlug!);
+if (!book) throw new Error(`Unknown book ${bookSlug} for ${versionId}`);
+
+const bookName = book.name || bookNameFromSlug(book.slug);
+const description = bookMetaDescription(meta.label, bookName);
+const pageUrl = bookPagePath(routeSlug!, book.slug);
 ---
 
-<RedirectLayout
-  canonical={absoluteUrl(`/${routeSlug}/read/`)}
-  message="Redirecting to the Bible reader…"
-  href={href}
-/>
+<BaseLayout
+  title={pageTitle(bookPageTitle(meta.label, bookName))}
+  description={description}
+  jsonLd={[
+    breadcrumbJsonLd([
+      { name: 'Home', url: '/' },
+      { name: meta.label, url: `/translations/${routeSlug}/` },
+      { name: bookName },
+    ]),
+    bookJsonLd({
+      name: `${bookName} (${meta.label})`,
+      description,
+      url: absoluteUrl(pageUrl),
+    }),
+  ]}
+>
+  <BookDocument
+    versionId={versionId}
+    routeSlug={routeSlug!}
+    label={meta.label}
+    book={{ ...book, name: bookName }}
+  />
+</BaseLayout>

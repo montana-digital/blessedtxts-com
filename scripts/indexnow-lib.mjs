@@ -108,3 +108,48 @@ export function parseSitemapLocs(distDir, expectedHost) {
 
   return filtered;
 }
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function submitIndexNowWithRetry({
+  host,
+  key,
+  keyLocation: keyLoc,
+  urlList,
+  fetchImpl = fetch,
+  retries = 2,
+  delayMs = 400,
+  apiUrl = INDEXNOW_API,
+}) {
+  const payload = JSON.stringify({
+    host,
+    key,
+    keyLocation: keyLoc,
+    urlList,
+  });
+
+  let last = { ok: false, status: 0, body: 'no attempt' };
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetchImpl(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: payload,
+      });
+      const body = await res.text().catch(() => '');
+      if (res.status === 200 || res.status === 202) {
+        return { ok: true, status: res.status, body };
+      }
+      last = { ok: false, status: res.status, body };
+    } catch (err) {
+      last = { ok: false, status: 0, body: err instanceof Error ? err.message : String(err) };
+    }
+    if (attempt < retries) await sleep(delayMs * (attempt + 1));
+  }
+
+  return last;
+}
+

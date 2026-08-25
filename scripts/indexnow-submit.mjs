@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import {
   INDEXNOW_API,
   keyLocation,
@@ -9,9 +6,11 @@ import {
   resolveKey,
   ROOT,
   shouldSubmitIndexNow,
+  submitIndexNowWithRetry,
 } from './indexnow-lib.mjs';
+import fs from 'fs';
+import path from 'path';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(ROOT, 'dist');
 
 if (!shouldSubmitIndexNow()) {
@@ -39,26 +38,21 @@ if (urlList.length === 0) {
   process.exit(1);
 }
 
-const payload = {
+console.log(`[indexnow] submitting ${urlList.length} URL(s) to ${INDEXNOW_API}`);
+
+const result = await submitIndexNowWithRetry({
   host,
   key,
   keyLocation: keyLocation(host, key),
   urlList,
-};
-
-console.log(`[indexnow] submitting ${urlList.length} URL(s) to ${INDEXNOW_API}`);
-
-const res = await fetch(INDEXNOW_API, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json; charset=utf-8' },
-  body: JSON.stringify(payload),
 });
 
-if (res.status === 200 || res.status === 202) {
-  console.log(`[indexnow] success (${res.status})`);
+if (result.ok) {
+  console.log(`[indexnow] success (${result.status})`);
   process.exit(0);
 }
 
-const body = await res.text().catch(() => '');
-console.error(`[indexnow] failed (${res.status})${body ? `: ${body}` : ''}`);
-process.exit(1);
+console.warn(
+  `[indexnow] failed after retries (${result.status})${result.body ? `: ${result.body}` : ''} — continuing deploy`,
+);
+process.exit(0);

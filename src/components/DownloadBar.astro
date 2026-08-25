@@ -6,9 +6,18 @@ interface Props {
   bookSlug?: string;
   chapter?: number;
   chapterJson?: string;
+  useStaticChapterFiles?: boolean;
 }
 
-const { versionId, label, scopeLabel, bookSlug, chapter, chapterJson } = Astro.props;
+const {
+  versionId,
+  label,
+  scopeLabel,
+  bookSlug,
+  chapter,
+  chapterJson,
+  useStaticChapterFiles = false,
+} = Astro.props;
 const enablePdf = import.meta.env.PUBLIC_ENABLE_PDF === '1';
 
 let txtHref = `/downloads/${versionId}/full.txt`;
@@ -16,8 +25,8 @@ let mdHref = `/downloads/${versionId}/full.md`;
 let pdfHref = `/downloads/${versionId}/full.pdf`;
 
 if (bookSlug && chapter) {
-  txtHref = '#';
-  mdHref = '#';
+  txtHref = `/downloads/${versionId}/${bookSlug}/${chapter}.txt`;
+  mdHref = `/downloads/${versionId}/${bookSlug}/${chapter}.md`;
   pdfHref = `/downloads/${versionId}/${bookSlug}/${chapter}.pdf`;
 } else if (bookSlug) {
   txtHref = `/downloads/${versionId}/${bookSlug}.txt`;
@@ -25,12 +34,12 @@ if (bookSlug && chapter) {
   pdfHref = `/downloads/${versionId}/${bookSlug}.pdf`;
 }
 
-const isChapter = bookSlug && chapter;
+const isChapterJs = Boolean(bookSlug && chapter && !useStaticChapterFiles);
 ---
 
 <aside class="download-bar" aria-label="Download scripture">
   <span>{scopeLabel}</span>
-  {isChapter ? (
+  {isChapterJs ? (
     <>
       <button type="button" data-dl="txt" data-chapter={chapterJson}>Download TXT</button>
       <button type="button" data-dl="md" data-chapter={chapterJson}>Download Markdown</button>
@@ -45,7 +54,7 @@ const isChapter = bookSlug && chapter;
   )}
 </aside>
 
-{isChapter && (
+{isChapterJs && (
   <script>
     import { buildChapterTxt, buildChapterMd, triggerDownload } from '../lib/chapter-download';
     document.querySelectorAll('.download-bar [data-dl="txt"], .download-bar [data-dl="md"]').forEach((btn) => {

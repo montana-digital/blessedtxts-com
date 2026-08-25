@@ -49,16 +49,31 @@ describe('deploy budget smoke', () => {
     assert.ok(fs.existsSync(sample), 'missing public/downloads/kjv/full.txt — run build:fast');
   });
 
-  it('compat redirect page uses location.replace', () => {
+  it('Genesis 1 txt/md exist and are linked from chapter HTML', () => {
+    if (!REQUIRE_DIST) return;
+    const txt = path.join(ROOT, 'public', 'downloads', 'kjv', 'genesis', '1.txt');
+    const md = path.join(ROOT, 'public', 'downloads', 'kjv', 'genesis', '1.md');
+    const distTxt = distPath('downloads', 'kjv', 'genesis', '1.txt');
+    const distMd = distPath('downloads', 'kjv', 'genesis', '1.md');
+    assert.ok(fs.existsSync(txt) || fs.existsSync(distTxt), 'missing downloads/kjv/genesis/1.txt');
+    assert.ok(fs.existsSync(md) || fs.existsSync(distMd), 'missing downloads/kjv/genesis/1.md');
+    const htmlPath = distPath('king-james-bible', 'genesis', '1', 'index.html');
+    assert.ok(fs.existsSync(htmlPath), 'chapter page missing in dist/');
+    const html = fs.readFileSync(htmlPath, 'utf8');
+    assert.match(html, /\/downloads\/kjv\/genesis\/1\.txt/);
+    assert.match(html, /\/downloads\/kjv\/genesis\/1\.md/);
+  });
+
+  it('chapter document has verse text and no JS redirect', () => {
     const sample = distPath('king-james-bible', 'genesis', '1', 'index.html');
     if (!fs.existsSync(sample)) {
-      if (REQUIRE_DIST) assert.fail('compat redirect page missing in dist/');
+      if (REQUIRE_DIST) assert.fail('chapter page missing in dist/');
       return;
     }
     const html = fs.readFileSync(sample, 'utf8');
-    assert.match(html, /location\.replace/);
-    assert.match(html, /read\/#/);
-    assert.match(html, /bookSlug.*chapterStr/);
+    assert.match(html, /In the beginning God created/i);
+    assert.doesNotMatch(html, /location\.replace/);
+    assert.doesNotMatch(html, /name="robots" content="noindex"/);
   });
 
   it('dist file count is documented', () => {

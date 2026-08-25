@@ -1,0 +1,77 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import DownloadBar from '@/components/DownloadBar.astro';
+import type { VersionId } from '@/lib/bible-config';
+import { bookPagePath, chapterPagePath, readerPassagePath } from '@/lib/passage-urls';
+import { nextChapter, previousChapter } from '@/lib/chapter-nav';
+import { renderChapterVersesHtml } from '@/lib/reader-ssr';
+import type { ChapterData, ReaderManifest } from '@/lib/reader-types';
+
+interface Props {
+  versionId: VersionId;
+  routeSlug: string;
+  label: string;
+  chapter: ChapterData;
+  manifest: ReaderManifest;
+}
+
+const { versionId, routeSlug, label, chapter, manifest } = Astro.props;
+const prev = previousChapter(manifest, chapter.bookSlug, chapter.chapter);
+const next = nextChapter(manifest, chapter.bookSlug, chapter.chapter);
+const readerHref = readerPassagePath(routeSlug, chapter.bookSlug, chapter.chapter);
+const versesHtml = renderChapterVersesHtml(chapter, 'chapter');
+---
+
+<Breadcrumbs items={[
+  { label: 'Home', href: '/' },
+  { label, href: `/translations/${routeSlug}/` },
+  { label: chapter.book, href: bookPagePath(routeSlug, chapter.bookSlug) },
+  { label: `Chapter ${chapter.chapter}` },
+]} />
+
+<article class="chapter-document">
+  <h1>{chapter.book} {chapter.chapter}</h1>
+  <p class="subtitle">{label} — public-domain Scripture on Blessed Texts</p>
+
+  <p class="reader-cta">
+    <a class="btn" href={readerHref}>Open in full reader</a>
+    {' '}
+    <a href={bookPagePath(routeSlug, chapter.bookSlug)}>All chapters of {chapter.book}</a>
+    {' · '}
+    <a href={`/indexed-bible/#${routeSlug}`}>Indexed Bible</a>
+  </p>
+
+  <DownloadBar
+    versionId={versionId}
+    label={label}
+    scopeLabel={`${chapter.book} ${chapter.chapter}`}
+    bookSlug={chapter.bookSlug}
+    chapter={chapter.chapter}
+    useStaticChapterFiles={true}
+  />
+
+  <nav class="bible-nav" aria-label="Chapter">
+    {prev ? (
+      <a href={chapterPagePath(routeSlug, prev.bookSlug, prev.chapter)}>← Previous</a>
+    ) : (
+      <span></span>
+    )}
+    <a href={bookPagePath(routeSlug, chapter.bookSlug)}>{chapter.book}</a>
+    {next ? (
+      <a href={chapterPagePath(routeSlug, next.bookSlug, next.chapter)}>Next →</a>
+    ) : (
+      <span></span>
+    )}
+  </nav>
+
+  <Fragment set:html={versesHtml} />
+</article>
+
+<style>
+  .chapter-document .verse-list li {
+    scroll-margin-top: 5rem;
+  }
+  .chapter-document .bible-nav {
+    justify-content: space-between;
+  }
+</style>

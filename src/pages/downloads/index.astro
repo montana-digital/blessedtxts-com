@@ -28,6 +28,7 @@ const enablePdf = import.meta.env.PUBLIC_ENABLE_PDF === '1';
   <p class="subtitle">
     Public-domain Scripture in plain text and Markdown{enablePdf ? ', and PDF' : ''}.
     Files are generated at build time and hosted on Blessed Texts.
+    Open any book or chapter as an HTML page from the <a href="/indexed-bible/">Indexed Bible</a>.
     {!enablePdf && (
       <span> PDF downloads are available when the site is built with full PDF generation enabled.</span>
     )}

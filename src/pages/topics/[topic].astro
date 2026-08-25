@@ -9,6 +9,7 @@ import {
   formatTopicLabel,
   loadTopicsIndex,
 } from '../../lib/topic-seo';
+import { TOPIC_LEADS } from '../../lib/topic-copy';
 import { pageTitle } from '../../site.config';
 
 export function getStaticPaths() {
@@ -23,8 +24,9 @@ if (!entry) throw new Error(`Unknown topic: ${topic}`);
 
 const label = formatTopicLabel(topic!);
 const keywords = entry.keywords.join(', ');
-const excerpts = buildTopicExcerpts(process.cwd(), topic!, topics, 12);
+const excerpts = buildTopicExcerpts(process.cwd(), topic!, topics, 16);
 const kjvReader = `/${VERSIONS.kjv.routeSlug}/read/`;
+const lead = TOPIC_LEADS[topic!] ?? `King James Bible verses about ${label.toLowerCase()}.`;
 const topicDescription = truncateMetaDescription(
   `Explore King James Bible verses about ${label.toLowerCase()} on Blessed Texts. Read curated excerpts and open each passage in the full searchable KJV reader.`,
 );
@@ -46,20 +48,25 @@ const topicDescription = truncateMetaDescription(
   ]} />
 
   <h1>Bible verses about {label.toLowerCase()}</h1>
-  <p class="subtitle">
-    Related words: {keywords}. Passages below are from the King James Bible. Open any verse in the
-    <a href={kjvReader}>KJV reader</a> or browse <a href="/indexed-bible/">all translations</a>.
+  <p class="subtitle">{lead}</p>
+  <p>
+    Related words: {keywords}. Passages below are from the King James Bible. Open a chapter page
+    for the verse text, or use the <a href={kjvReader}>KJV reader</a> and
+    <a href="/indexed-bible/">Indexed Bible</a>.
   </p>
 
   <ol class="topic-verses">
     {excerpts.map((ex) => (
       <li>
         <p class="topic-verse-ref">
-          <a href={ex.readerHref}>{ex.ref}</a>
+          <a href={ex.chapterHref}>{ex.ref}</a>
         </p>
-        <blockquote cite={ex.readerHref}>
+        <blockquote cite={ex.chapterHref}>
           <p>{ex.text}</p>
         </blockquote>
+        <p class="topic-verse-reader">
+          <a href={ex.readerHref}>Open in reader</a>
+        </p>
       </li>
     ))}
   </ol>
@@ -90,5 +97,9 @@ const topicDescription = truncateMetaDescription(
     margin: 0;
     padding-left: 1rem;
     border-left: 3px solid var(--accent, #b45309);
+  }
+  .topic-verse-reader {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
   }
 </style>

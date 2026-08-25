@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import BlessingGenerator from '../components/BlessingGenerator.astro';
 import { organizationJsonLd, webSiteJsonLd } from '../lib/seo';
 import { HOME_SUBTITLE, pageTitle } from '../site.config';
+import { VERSIONS } from '../lib/bible-config';
 ---
 
 <BaseLayout
@@ -24,10 +25,25 @@ import { HOME_SUBTITLE, pageTitle } from '../site.config';
     <p class="subtitle">{HOME_SUBTITLE}</p>
   </header>
 
+  <p class="home-intro">
+    Blessed Texts is a free Bible reader for the
+    <a href={`/${VERSIONS.kjv.routeSlug}/read/`}>King James</a>,
+    <a href={`/${VERSIONS.web.routeSlug}/read/`}>World English</a>, and
+    <a href={`/${VERSIONS.webster.routeSlug}/read/`}>Webster</a> translations.
+    Browse every book in the <a href="/indexed-bible/">Indexed Bible</a>,
+    read verses by <a href="/topics/">topic</a>,
+    or open a chapter such as <a href="/king-james-bible/john/3/">John 3 (KJV)</a>.
+  </p>
+
   <BlessingGenerator />
   <noscript>
     <div class="verse-panel is-visible" style="display:block">
-      <p>JavaScript is disabled. <a href="/about/">Learn about Blessed Texts</a> or read online.</p>
+      <p>
+        JavaScript is disabled.
+        <a href="/indexed-bible/">Browse the Indexed Bible</a>,
+        <a href="/topics/">read verses by topic</a>,
+        or <a href="/about/">learn about Blessed Texts</a>.
+      </p>
     </div>
   </noscript>
 </BaseLayout>

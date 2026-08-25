@@ -8,11 +8,24 @@ export function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
-export function renderChapterVersesHtml(ch: ChapterData): string {
+export type VerseDomIdMode = 'reader' | 'chapter';
+
+export function verseDomId(
+  ch: Pick<ChapterData, 'bookSlug' | 'chapter'>,
+  verse: number,
+  mode: VerseDomIdMode = 'reader',
+): string {
+  return mode === 'chapter' ? `v${verse}` : `${ch.bookSlug}-${ch.chapter}-v${verse}`;
+}
+
+export function renderChapterVersesHtml(
+  ch: ChapterData,
+  mode: VerseDomIdMode = 'reader',
+): string {
   const items = ch.verses
     .map(
       (v) =>
-        `<li id="${ch.bookSlug}-${ch.chapter}-v${v.n}" class="reader-ssr-verse" data-verse="${v.n}">
+        `<li id="${verseDomId(ch, v.n, mode)}" class="reader-ssr-verse" data-verse="${v.n}">
         <sup>${v.n}</sup>
         <span class="verse-text">${escapeHtml(v.text)}</span>
       </li>`,

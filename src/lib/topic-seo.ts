@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { VERSIONS, slugToBook, type VersionId } from './bible-config';
 import { loadChapter } from './load-chapter';
+import { chapterVersePath, readerPassagePath } from './passage-urls';
 import { formatTopicLabel } from './topic-label';
 
 export { formatTopicLabel };
@@ -44,6 +45,7 @@ export interface TopicVerseExcerpt {
   text: string;
   bookName: string;
   readerHref: string;
+  chapterHref: string;
 }
 
 export function buildTopicExcerpts(
@@ -70,7 +72,18 @@ export function buildTopicExcerpts(
       ref: `${bookName} ${parsed.chapter}:${parsed.verse}`,
       text: verse.text,
       bookName,
-      readerHref: `/${meta.routeSlug}/read/#${parsed.bookSlug}-${parsed.chapter}-v${parsed.verse}`,
+      readerHref: readerPassagePath(
+        meta.routeSlug,
+        parsed.bookSlug,
+        parsed.chapter,
+        parsed.verse,
+      ),
+      chapterHref: chapterVersePath(
+        meta.routeSlug,
+        parsed.bookSlug,
+        parsed.chapter,
+        parsed.verse,
+      ),
     });
   }
   return excerpts;

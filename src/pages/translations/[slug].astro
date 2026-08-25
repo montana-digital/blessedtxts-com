@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import { VERSIONS } from '../../lib/bible-config';
-import { breadcrumbJsonLd } from '../../lib/seo';
+import { VERSIONS, type VersionId } from '../../lib/bible-config';
+import { breadcrumbJsonLd, faqPageJsonLd } from '../../lib/seo';
+import { TRANSLATION_GUIDES } from '../../lib/translation-guides';
 import { pageTitle } from '../../site.config';
 
 export function getStaticPaths() {
@@ -13,17 +14,21 @@ export function getStaticPaths() {
 }
 
 const { meta } = Astro.props;
+const guide = TRANSLATION_GUIDES[meta.id as VersionId];
 const readUrl = `/${meta.routeSlug}/read/`;
 ---
 
 <BaseLayout
   title={pageTitle(`${meta.label} — Translation Guide`)}
   description={meta.seoDescription}
-  jsonLd={breadcrumbJsonLd([
-    { name: 'Home', url: '/' },
-    { name: 'Translations', url: '/indexed-bible/' },
-    { name: meta.label },
-  ])}
+  jsonLd={[
+    breadcrumbJsonLd([
+      { name: 'Home', url: '/' },
+      { name: 'Translations', url: '/indexed-bible/' },
+      { name: meta.label },
+    ]),
+    faqPageJsonLd(guide.faqs),
+  ]}
 >
   <Breadcrumbs items={[
     { label: 'Home', href: '/' },
@@ -37,15 +42,31 @@ const readUrl = `/${meta.routeSlug}/read/`;
   <div class="about-content">
     <p>{meta.facts}</p>
     <p>
-      Use Blessed Texts to read the entire {meta.label} in one continuous view, search by keyword or reference,
-      bookmark verses, and switch between King James, World English, and Webster translations.
-    </p>
-    <p>
       <a class="btn" href={readUrl}>Read {meta.label} online</a>
       {' '}
       <a href={`/indexed-bible/#${meta.routeSlug}`}>Browse books</a>
       {' · '}
       <a href="/downloads/">Download files</a>
     </p>
+
+    <h2>History</h2>
+    <p>{guide.history}</p>
+
+    <h2>License</h2>
+    <p>{guide.license}</p>
+
+    <h2>How it compares</h2>
+    <p>{guide.differences}</p>
+
+    <h2>How to read it here</h2>
+    <p>{guide.howToRead}</p>
+
+    <h2>Frequently asked questions</h2>
+    {guide.faqs.map((faq) => (
+      <section>
+        <h3>{faq.question}</h3>
+        <p>{faq.answer}</p>
+      </section>
+    ))}
   </div>
 </BaseLayout>

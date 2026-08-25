@@ -12,12 +12,14 @@ describe('shouldIncludeInSitemap', () => {
     );
   });
 
-  it('excludes legacy redirect routes', () => {
+  it('includes book and chapter documents', () => {
+    expect(shouldIncludeInSitemap('https://blessedtxts.com/king-james-bible/genesis/')).toBe(true);
+    expect(shouldIncludeInSitemap('https://blessedtxts.com/king-james-bible/genesis/1/')).toBe(true);
+    expect(shouldIncludeInSitemap('https://blessedtxts.com/world-english-bible/john/3/')).toBe(true);
+  });
+
+  it('excludes version roots and bible-versions hub', () => {
     expect(shouldIncludeInSitemap('https://blessedtxts.com/king-james-bible/')).toBe(false);
-    expect(shouldIncludeInSitemap('https://blessedtxts.com/king-james-bible/genesis/')).toBe(false);
-    expect(shouldIncludeInSitemap('https://blessedtxts.com/king-james-bible/genesis/1/')).toBe(
-      false,
-    );
     expect(shouldIncludeInSitemap('https://blessedtxts.com/bible-versions/')).toBe(false);
   });
 });

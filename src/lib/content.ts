@@ -1,18 +1,17 @@
 import fs from 'fs';
 import path from 'path';
 import type { VersionId } from './bible-config';
+import type { ReaderManifest } from './reader-types';
 
 const ROOT = path.join(process.cwd(), 'src', 'data', 'bibles');
 const VERSION_IDS: VersionId[] = ['kjv', 'web', 'webster'];
 
-interface PublicBookManifest {
-  routeSlug: string;
-  books: { slug: string; chapters: number[] }[];
-}
-
-function loadPublicManifest(versionId: VersionId): PublicBookManifest {
+export function loadVersionManifest(versionId: VersionId): ReaderManifest {
   const p = path.join(process.cwd(), 'public', 'bibles', `manifest-${versionId}.json`);
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
+  if (!fs.existsSync(p)) {
+    throw new Error(`Missing ${p}. Run npm run prebuild before building pages.`);
+  }
+  return JSON.parse(fs.readFileSync(p, 'utf8')) as ReaderManifest;
 }
 
 export function listBooks(versionId: VersionId): string[] {
@@ -23,7 +22,7 @@ export function listBooks(versionId: VersionId): string[] {
 export function getAllChapterPaths(): { params: { version: string; book: string; chapter: string } }[] {
   const paths: { params: { version: string; book: string; chapter: string } }[] = [];
   for (const versionId of VERSION_IDS) {
-    const manifest = loadPublicManifest(versionId);
+    const manifest = loadVersionManifest(versionId);
     for (const book of manifest.books) {
       for (const ch of book.chapters) {
         paths.push({
@@ -42,7 +41,7 @@ export function getAllChapterPaths(): { params: { version: string; book: string;
 export function getAllBookPaths(): { params: { version: string; book: string } }[] {
   const paths: { params: { version: string; book: string } }[] = [];
   for (const versionId of VERSION_IDS) {
-    const manifest = loadPublicManifest(versionId);
+    const manifest = loadVersionManifest(versionId);
     for (const book of manifest.books) {
       paths.push({ params: { version: manifest.routeSlug, book: book.slug } });
     }

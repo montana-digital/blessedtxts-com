@@ -1,6 +1,8 @@
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 
 # AI site guide (llms.txt) for assistants and crawlers:
 # https://blessedtxts.com/llms.txt
+# https://blessedtxts.com/.well-known/llms.txt
 Sitemap: https://blessedtxts.com/sitemap-index.xml

@@ -36,7 +36,7 @@ SEO and crawler notes: [docs/seo.md](docs/seo.md). How to contribute: [CONTRIBUT
 
 ## Architecture
 
-Prebuild scripts parse `data/raw/` into chapter JSON and search indexes. Astro generates static pages; the reader hydrates chapters in the browser from `/bibles/`. Shared logic lives in `src/lib/`; DOM modules in `src/scripts/`.
+Prebuild scripts parse `data/raw/` into chapter JSON and search indexes. Astro generates static pages (including one HTML document per book and chapter); the reader hydrates the full Bible in the browser from `/bibles/`. Shared logic lives in `src/lib/`; DOM modules in `src/scripts/`. Verse lookup is also available at `/api/v1/` via Cloudflare Pages Functions.
 
 ## Bible texts
 
